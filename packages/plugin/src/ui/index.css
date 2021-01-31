@@ -1,0 +1,14 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* Needed to avoid Figma UI2 problem with Tailwind */
+label::before {
+  box-sizing: content-box;
+}
+
+/* * {
+  white-space: nowrap;
+} */

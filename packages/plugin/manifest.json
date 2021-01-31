@@ -1,0 +1,6 @@
+{
+  "api": "1.0.0",
+  "name": "figma-plugin-code-highlight",
+  "main": "build/plugin.js",
+  "ui": "build/ui.html"
+}

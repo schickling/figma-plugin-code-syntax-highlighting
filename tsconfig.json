@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "noEmit": true,
+    "moduleResolution": "node",
+    "lib": ["ES2020", "DOM"],
+    "paths": {
+      "react-figma-plugin-ds": ["./packages/react-figma-plugin-ds/src"]
+    }
+  }
+}
