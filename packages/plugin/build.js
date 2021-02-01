@@ -1,15 +1,17 @@
 #!/usr/bin/env node
+
+// @ts-check
 const { build } = require('estrella')
 const path = require('path')
 const fs = require('fs')
-const fetch = require('node-fetch')
+const fetch = require('node-fetch').default
 
 build({
   entry: 'src/ui/ui.tsx',
   bundle: true,
   sourcemap: 'inline',
   // minify: false,
-  loader: { '.ttf': 'dataurl' },
+  // loader: { '.ttf': 'dataurl' },
   define: { 'process.env.NODE_ENV': 'development' },
   onEnd: callback('main'),
 })
@@ -20,7 +22,7 @@ build({
   bundle: true,
 })
 
-const htmlTemplate = (js, workerScripts, css) => `\
+const htmlTemplate = (js, css) => `\
 <html>
   <head>
     <meta charset="utf-8">
@@ -30,35 +32,18 @@ const htmlTemplate = (js, workerScripts, css) => `\
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="iframe"></div>
     <script type="text/javascript">
     ${js.replaceAll(`</script>`, `<" + "/script>`)}
     </script>
-    ${workerScripts}
   </body>
 </html>
 
 `
 
-const workerDefs = {
-  ts: 'node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js',
-  json: 'node_modules/monaco-editor/esm/vs/language/json/json.worker.js',
-  // html: 'node_modules/monaco-editor/esm/vs/language/html/html.worker.js',
-  // css: 'node_modules/monaco-editor/esm/vs/language/css/css.worker.js',
-  editor: 'node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
-}
-
-Object.entries(workerDefs).forEach(([key, entry]) =>
-  build({
-    entry,
-    bundle: true,
-    onEnd: callback(key),
-  }),
-)
-
 const cache = {}
 
-const keys = Object.keys(workerDefs).concat(['main'])
+const keys = ['main']
 
 function callback(key) {
   return (_config, result) => {
@@ -76,21 +61,11 @@ async function makeHTML() {
     return
   }
 
-  const workerScripts = Object.keys(workerDefs)
-    .map(
-      (key) => `\
-<script id="${key}-worker" type="javascript/worker">
-${cache[key]}
-</script>
-`,
-    )
-    .join('\n')
-
   const css = await fetch(
     'https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css',
   ).then((_) => _.text())
 
-  const content = htmlTemplate(cache['main'], workerScripts, css)
+  const content = htmlTemplate(cache['main'], css)
   const filePath = path.join(__dirname, 'build/ui.html')
   fs.writeFileSync(filePath, content)
   console.log(`Wrote ${filePath}`)

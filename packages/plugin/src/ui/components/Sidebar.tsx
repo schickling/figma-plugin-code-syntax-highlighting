@@ -1,14 +1,14 @@
 import React, { FC, useMemo } from 'react'
 import { Input, Select, Title, Button, Checkbox } from 'react-figma-plugin-ds'
 import type { SelectOption } from 'react-figma-plugin-ds'
-import { extract } from '../utils/monaco'
+// import { extract } from '../utils/monaco'
 import { defaultThemeNames, themeMap, ThemeName } from '../themes'
 import type * as monaco from 'monaco-editor'
 import { useMonaco } from '@monaco-editor/react'
 
 export const Sidebar: FC<{
   code: string
-  monoFonts: Font[]
+  monoFontFamilies: string[]
   editor: monaco.editor.IStandaloneCodeEditor | undefined
   themeName: ThemeName
   setThemeName: (_: ThemeName) => void
@@ -16,11 +16,13 @@ export const Sidebar: FC<{
   setLanguage: (_: string) => void
   fontSize: number
   setFontSize: (_: number) => void
+  fontFamily: string
+  setFontFamily: (_: string) => void
   lineNumbers: boolean
   setLineNumbers: (_: boolean) => void
 }> = ({
   code,
-  monoFonts,
+  monoFontFamilies,
   editor,
   themeName,
   setThemeName,
@@ -28,16 +30,21 @@ export const Sidebar: FC<{
   setLanguage,
   fontSize,
   setFontSize,
+  fontFamily,
+  setFontFamily,
   lineNumbers,
   setLineNumbers,
 }) => {
   const createText = async () => {
-    const result = await extract(code, 'typescript')
+    const { extract } = await import('../utils/monaco')
+    const result = await extract(code, language)
     parent.postMessage(
       {
         pluginMessage: {
           type: 'CREATE_TEXT',
           result,
+          fontFamily,
+          fontSize,
         },
       },
       '*',
@@ -50,11 +57,11 @@ export const Sidebar: FC<{
     () => toSelectOptions(Object.keys(themeMap).concat(defaultThemeNames)),
     [],
   )
-  const fonts = toSelectOptions(monoFonts.map((_) => _.fontName.family))
+  const fonts = toSelectOptions(monoFontFamilies)
   const languages = useMemo(
     () =>
       toSelectOptions(
-        monaco?.languages.getLanguages().map((_) => _.id) ?? ['javascript'],
+        monaco?.languages.getLanguages().map((_) => _.id) ?? ['typescript'],
         (_) => _.toLowerCase(),
       ),
     [monaco],
@@ -79,7 +86,8 @@ export const Sidebar: FC<{
           <Select
             options={fonts}
             placeholder="Select font"
-            defaultValue={fonts[0].value}
+            defaultValue={fontFamily}
+            onChange={(_) => setFontFamily(_.value as string)}
           />
           <Input
             placeholder="Font size"

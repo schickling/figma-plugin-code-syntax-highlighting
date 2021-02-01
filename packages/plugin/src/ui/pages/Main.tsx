@@ -3,15 +3,20 @@ import { Prism } from '../components/Prism'
 import { Sidebar } from '../components/Sidebar'
 import { ThemeName } from '../themes'
 import { editor } from 'monaco-editor'
+import * as monaco from 'monaco-editor'
+
+// NOTE this is needed to use the global monaco instance for both the extractor and the React wrapper
+window.monaco = monaco
 
 const Main: React.FC = () => {
   const [themeName, setThemeName] = useState<ThemeName>('Monokai')
   const [code, setCode] = useState('const myVal = "Hello world"')
-  const [language, setLanguage] = useState('javascript')
+  const [language, setLanguage] = useState('typescript')
   const [lineNumbers, setLineNumbers] = useState(true)
+  const [fontFamily, setFontFamily] = useState('monospace')
   const [fontSize, setFontSize] = useState(13)
-  const [monoFonts, setMonoFonts] = useState<Font[]>([
-    { fontName: { family: 'monospace', style: 'Regular' } },
+  const [monoFontFamilies, setMonoFontFamilies] = useState<string[]>([
+    'monospace',
   ])
   const [editor, setEditor] = useState<
     editor.IStandaloneCodeEditor | undefined
@@ -30,15 +35,26 @@ const Main: React.FC = () => {
       }
 
       if (event.data.pluginMessage.type === 'AVAILABLE_FONTS') {
-        setMonoFonts(event.data.pluginMessage.fonts)
+        setMonoFontFamilies(event.data.pluginMessage.monoFontFamilies)
       }
     }
   })
 
+  console.log({ editor })
+
   return (
     <div className="flex w-full h-full">
       <Prism
-        {...{ code, themeName, language, lineNumbers, setEditor, fontSize }}
+        {...{
+          code,
+          setCode,
+          themeName,
+          language,
+          lineNumbers,
+          setEditor,
+          fontSize,
+          fontFamily,
+        }}
       />
       <Sidebar
         {...{
@@ -50,8 +66,10 @@ const Main: React.FC = () => {
           setLanguage,
           fontSize,
           setFontSize,
+          fontFamily,
+          setFontFamily,
           editor,
-          monoFonts,
+          monoFontFamilies,
           code,
         }}
       />

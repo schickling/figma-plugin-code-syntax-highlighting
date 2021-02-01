@@ -17,22 +17,32 @@ async function createTextNode({
   fontStyles: FontStyles
   fontSize: number
 }): Promise<void> {
-  console.log(result)
+  console.log({ result, fontFamily, fontStyles, fontSize })
 
-  const fontName: FontName = { family: fontFamily, style: fontStyles.normal }
-  await figma.loadFontAsync(fontName)
+  const normalFontName: FontName = {
+    family: fontFamily,
+    style: fontStyles.normal,
+  }
+
+  await Promise.all([
+    figma.loadFontAsync(normalFontName),
+    figma.loadFontAsync({ family: fontFamily, style: fontStyles.bold }),
+  ])
 
   const nodes: SceneNode[] = []
   const text = figma.createText()
-  text.fontSize = fontSize
-  text.fontName = fontName
+  // text.lineHeight = {
+  //   unit: 'PERCENT',
+  //   value: 150,
+  // }
+  text.fontName = normalFontName
   text.characters = result.lines
     .map((line) => line.tokens.map((token) => token.text).join(''))
     .join('\n')
 
   let currentOffset = 0
 
-  for (const line of result.lines) {
+  for (const [index, line] of result.lines.entries()) {
     for (const token of line.tokens) {
       const newOffset = currentOffset + token.text.length
       const foreground = tokenColorToPaint(token.tokenStyle.foreground)
@@ -55,12 +65,15 @@ async function createTextNode({
       currentOffset = newOffset
     }
     // NOTE account for linebreak
-    currentOffset += 1
+    if (index < result.lines.length - 1) {
+      currentOffset += 1
+    }
   }
 
-  text.setRangeFontSize(0, currentOffset, 12)
+  text.setRangeFontSize(0, currentOffset, fontSize)
 
   figma.currentPage.appendChild(text)
+
   nodes.push(text)
 
   figma.currentPage.selection = nodes
@@ -106,10 +119,10 @@ function getFontStyles(
     .map((_) => _.fontName)
     .filter((_) => _.family === selectedFontFamily)
     .map((_) => _.style)
-  const bold = ['bold', 'semibold'].find((boldish) =>
+  const bold = ['Bold', 'Semibold'].find((boldish) =>
     fontStyles.some((_) => _ === boldish),
   )!
-  const italic = ['italic'].find((italicish) =>
+  const italic = ['Italic'].find((italicish) =>
     fontStyles.some((_) => _ === italicish),
   )!
   const normal = ['Regular', 'Medium'].find((normalish) =>
@@ -122,25 +135,31 @@ async function main() {
   updateSelection()
 
   const availableFonts = await figma.listAvailableFontsAsync()
-  const monoFonts = availableFonts.filter((_) =>
-    ['mono', 'code'].some((monoish) =>
-      _.fontName.family.toLowerCase().includes(monoish),
-    ),
+  const monoFontFamilies = unique(
+    availableFonts
+      .map((_) => _.fontName.family)
+      .filter((_) =>
+        ['mono', 'code'].some((monoish) => _.toLowerCase().includes(monoish)),
+      ),
   )
-  figma.ui.postMessage({ type: 'AVAILABLE_FONTS', fonts: monoFonts })
+  figma.ui.postMessage({ type: 'AVAILABLE_FONTS', monoFontFamilies })
 
   figma.on('selectionchange', updateSelection)
 
-  figma.ui.onmessage = (msg) => {
+  figma.ui.onmessage = async (msg) => {
     console.log({ msg })
 
     if (msg.type === 'CREATE_TEXT') {
-      createTextNode({
-        result: msg.result,
-        fontFamily: msg.fontFamily,
-        fontStyles: getFontStyles(monoFonts, msg.fontFamily),
-        fontSize: msg.fontSize,
-      })
+      try {
+        await createTextNode({
+          result: msg.result,
+          fontFamily: msg.fontFamily,
+          fontStyles: getFontStyles(availableFonts, msg.fontFamily),
+          fontSize: msg.fontSize,
+        })
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 
@@ -148,3 +167,7 @@ async function main() {
 }
 
 main().catch(console.error)
+
+function unique(_: string[]): string[] {
+  return Array.from(new Set(_))
+}

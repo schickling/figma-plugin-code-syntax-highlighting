@@ -40,9 +40,9 @@ import 'react-figma-plugin-ds/figma-plugin-ds.css'
 //   // },
 // }
 
-function getWorker(key: string): Worker {
-  const blob = new Blob([document.getElementById(`${key}-worker`).textContent])
-  return new Worker(window.URL.createObjectURL(blob))
-}
+// function getWorker(key: string): Worker {
+//   const blob = new Blob([document.getElementById(`${key}-worker`).textContent])
+//   return new Worker(window.URL.createObjectURL(blob))
+// }
 
 ReactDOM.render(<Main />, document.getElementById('root'))

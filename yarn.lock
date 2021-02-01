@@ -10525,10 +10525,10 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.22.1":
-  version: 0.22.1
-  resolution: "monaco-editor@npm:0.22.1"
-  checksum: 4f988fbe7593bf3e6fa1cb2926a220df90428fd65a986b1e5dfaafe008e071f7ea45fbfde05b92e48024435fb96c7f84856450676ea1088dee3bce5a53d3d9c9
+"monaco-editor@npm:0.21.2":
+  version: 0.21.2
+  resolution: "monaco-editor@npm:0.21.2"
+  checksum: 9a196b79800061a4fcd99411d1e05929f21b7d9f6535bed1469f235a0b53dfd871f62f7eb10ab21cb37fea3fe0449652426b0b4ac0827933637bf7b810e1e735
   languageName: node
   linkType: hard
 
@@ -11789,7 +11789,7 @@ fsevents@~2.3.1:
     "@vitejs/plugin-react-refresh": ^1.1.3
     estrella: ^1.3.0
     figplug: ^0.1.18
-    monaco-editor: ^0.22.1
+    monaco-editor: 0.21.2
     monaco-editor-node: ^0.2.0
     node-fetch: ^2.6.1
     postcss: ^8.2.4

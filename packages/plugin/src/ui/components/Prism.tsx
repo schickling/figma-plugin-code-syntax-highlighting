@@ -39,23 +39,36 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 
 export const Prism: FC<{
   code: string
+  setCode: (_: string) => void
   themeName: ThemeName
   lineNumbers: boolean
   language: string
   fontSize: number
+  fontFamily: string
   setEditor: (_: monaco.editor.IStandaloneCodeEditor) => void
-}> = ({ code, themeName, language, lineNumbers, fontSize, setEditor }) => {
+}> = ({
+  code,
+  setCode,
+  themeName,
+  language,
+  lineNumbers,
+  fontSize,
+  fontFamily,
+  setEditor,
+}) => {
   const monaco = useMonaco()
 
   useEffect(() => {
     if (monaco) {
+      console.log({ monaco })
+
       monaco.languages.registerDocumentFormattingEditProvider('javascript', {
         async provideDocumentFormattingEdits(model) {
           const prettier = await import('prettier/standalone')
-          // const babylon = await import('prettier/')
+          const babel = await import('prettier/parser-babel')
           const text = prettier.format(model.getValue(), {
-            // parser: 'babylon',
-            // plugins: [babylon],
+            parser: 'babel',
+            plugins: [babel],
             singleQuote: true,
           })
 
@@ -109,6 +122,7 @@ export const Prism: FC<{
         width="100%"
         language={language}
         value={code}
+        onChange={setCode}
         onMount={(editor) => setEditor(editor)}
         options={{
           minimap: { enabled: false },
@@ -125,6 +139,7 @@ export const Prism: FC<{
           codeLens: false,
           showUnused: false,
           fontSize,
+          fontFamily,
 
           theme: themeName,
 

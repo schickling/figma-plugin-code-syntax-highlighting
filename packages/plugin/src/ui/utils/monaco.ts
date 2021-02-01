@@ -4,6 +4,7 @@ import {
   TokenizationRegistry,
   TokenMetadata,
 } from 'monaco-editor/esm/vs/editor/common/modes'
+import { editor } from 'monaco-editor'
 // import * as monaco from 'monaco-editor'
 // import { ghTheme, monokaiTheme } from '../themes'
 
