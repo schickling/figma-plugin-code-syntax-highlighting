@@ -8,7 +8,7 @@ import {
   Icon,
 } from 'react-figma-plugin-ds'
 import type { SelectOption } from 'react-figma-plugin-ds'
-import { themeMap, ThemeName } from '../../shared/themes'
+import { themeMap, ThemeName } from '@internal/plugin-shared'
 import type * as monaco from 'monaco-editor'
 import { useMonaco } from '@monaco-editor/react'
 import { prepareThemeName } from '../utils/monaco'

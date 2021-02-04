@@ -1,5 +1,8 @@
-import { Color, ExtractionResultLine } from '../shared/monaco'
-import { RunArgs } from '../shared/run'
+import type {
+  Color,
+  ExtractionResultLine,
+  RunArgs,
+} from '@internal/plugin-shared'
 
 export async function run({
   result,

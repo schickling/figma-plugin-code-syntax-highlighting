@@ -1,4 +1,4 @@
-import { IThemeObject } from '../../vsc-converter'
+import { IThemeObject } from '../vsc-converter'
 
 const dark_vs: IThemeObject = {
   name: 'Dark (Visual Studio)',

@@ -2,10 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    // Needed for iterator in ./src/plugin/run.ts
-    "downlevelIteration": true,
     "jsx": "react"
   },
   "include": ["./src"],
-  "references": [{ "path": "../plugin-shared" }]
+  "references": [
+    { "path": "../react-figma-plugin-ds" },
+    { "path": "../plugin-shared" }
+  ]
 }

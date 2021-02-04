@@ -1,10 +1,12 @@
+// NOTE import directly from source to avoid bundling of monaco-editor
+// TOOD clean this up
 import {
   isRunMessage,
   RunDoneMessage,
   SelectionChangeMessage,
-} from '../shared/event-messages'
-import { getFontStyles } from '../shared/run'
-import { pick } from '../shared/utils'
+} from '@internal/plugin-shared/src/event-messages'
+import { FontStyles } from '@internal/plugin-shared/src/run'
+import { pick } from '@internal/plugin-shared/src/utils'
 import { run } from './run'
 
 figma.showUI(__html__)
@@ -77,4 +79,24 @@ main().catch(console.error)
 
 function unique(_: string[]): string[] {
   return Array.from(new Set(_))
+}
+
+function getFontStyles(
+  availableFonts: Font[],
+  selectedFontFamily: string,
+): FontStyles {
+  const fontStyles = availableFonts
+    .map((_) => _.fontName)
+    .filter((_) => _.family === selectedFontFamily)
+    .map((_) => _.style)
+  const bold = ['Bold', 'Semibold'].find((boldish) =>
+    fontStyles.some((_) => _ === boldish),
+  )!
+  const italic = ['Italic'].find((italicish) =>
+    fontStyles.some((_) => _ === italicish),
+  )!
+  const normal = ['Regular', 'Medium'].find((normalish) =>
+    fontStyles.some((_) => _ === normalish),
+  )!
+  return { bold, italic, normal }
 }

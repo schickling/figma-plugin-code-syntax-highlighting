@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "lib": ["ES2020", "DOM"],
     "paths": {
-      "react-figma-plugin-ds": ["./packages/react-figma-plugin-ds/src"]
+      "@internal/plugin-shared": ["./packages/plugin-shared/src"]
     }
   }
 }

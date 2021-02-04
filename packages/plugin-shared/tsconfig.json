@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "resolveJsonModule": true
+  },
+  "include": ["./src/**/*", "./src/**/*.json", "../plugin-app/src/global.d.ts"],
+  "references": []
+}

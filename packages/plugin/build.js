@@ -17,7 +17,7 @@ build({
 })
 
 build({
-  entry: 'src/ops/plugin.ts',
+  entry: 'src/plugin/plugin.ts',
   outfile: 'build/plugin.js',
   bundle: true,
   sourcemap: 'inline',
@@ -70,6 +70,7 @@ async function makeHTML() {
 
   const content = htmlTemplate(cache['main'], css)
   const filePath = path.join(__dirname, 'build/ui.html')
+  fs.mkdirSync(path.join(__dirname, 'build'), { recursive: true })
   fs.writeFileSync(filePath, content)
   console.log(`Wrote ${filePath}`)
 }

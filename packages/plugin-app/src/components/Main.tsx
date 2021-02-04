@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { Prism } from '../components/Prism'
-import { Sidebar } from '../components/Sidebar'
-import { themeMap, ThemeName } from '../../shared/themes'
-import { editor } from 'monaco-editor'
-import * as monaco from 'monaco-editor'
-import { loadFont } from '../utils/font-loader'
+import { Prism } from './Prism'
+import { Sidebar } from './Sidebar'
 import {
+  themeMap,
+  ThemeName,
   isRunDoneMessage,
   isSelectionChangeMessage,
   RunMessage,
-} from '../../shared/event-messages'
+} from '@internal/plugin-shared'
+import { editor } from 'monaco-editor'
+import * as monaco from 'monaco-editor'
+import { loadFont } from '../utils/font-loader'
 import { prepareThemeName } from '../utils/monaco'
 
 // NOTE this is needed to use the global monaco instance for both the extractor and the React wrapper
@@ -65,7 +66,7 @@ const Main: React.FC = () => {
   const execRun = async () => {
     setIsLoading(true)
     // TODO move up
-    const { extract } = await import('../../shared/monaco')
+    const { extract } = await import('../../../plugin-shared/src/monaco')
     const themeData = Object.entries(themeMap).find(
       ([_]) => prepareThemeName(_) === themeName,
     )![1]

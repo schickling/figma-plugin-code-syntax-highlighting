@@ -5,5 +5,8 @@
   ],
   "devDependencies": {
     "typescript": "^4.1.3"
+  },
+  "resolutions": {
+    "has-symbols": "patch:has-symbols@1.0.1#./.patches/has-symbols.patch"
   }
 }
