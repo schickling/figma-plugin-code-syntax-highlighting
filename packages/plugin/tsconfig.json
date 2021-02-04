@@ -3,8 +3,9 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
+    "resolveJsonModule": true,
     "jsx": "react"
   },
-  "include": ["./src"],
+  "include": ["./src/**/*", "./src/**/*.json"],
   "references": [{ "path": "../react-figma-plugin-ds" }]
 }

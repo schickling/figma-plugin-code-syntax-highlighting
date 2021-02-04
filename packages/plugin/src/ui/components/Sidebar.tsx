@@ -1,13 +1,19 @@
 import React, { FC, useMemo } from 'react'
-import { Input, Select, Title, Button, Checkbox } from 'react-figma-plugin-ds'
+import {
+  Input,
+  Select,
+  Title,
+  Button,
+  Checkbox,
+  Icon,
+} from 'react-figma-plugin-ds'
 import type { SelectOption } from 'react-figma-plugin-ds'
-// import { extract } from '../utils/monaco'
-import { defaultThemeNames, themeMap, ThemeName } from '../themes'
+import { themeMap, ThemeName } from '../../shared/themes'
 import type * as monaco from 'monaco-editor'
 import { useMonaco } from '@monaco-editor/react'
+import { prepareThemeName } from '../utils/monaco'
 
 export const Sidebar: FC<{
-  code: string
   monoFontFamilies: string[]
   editor: monaco.editor.IStandaloneCodeEditor | undefined
   themeName: ThemeName
@@ -18,10 +24,16 @@ export const Sidebar: FC<{
   setFontSize: (_: number) => void
   fontFamily: string
   setFontFamily: (_: string) => void
+  includeBackground: boolean
+  setIncludeBackground: (_: boolean) => void
   lineNumbers: boolean
   setLineNumbers: (_: boolean) => void
+  overwriteText: boolean
+  setOverwriteText: (_: boolean) => void
+  overwriteTextEnabled: boolean
+  execRun: () => void
+  isLoading: boolean
 }> = ({
-  code,
   monoFontFamilies,
   editor,
   themeName,
@@ -32,42 +44,33 @@ export const Sidebar: FC<{
   setFontSize,
   fontFamily,
   setFontFamily,
+  includeBackground,
+  setIncludeBackground,
   lineNumbers,
   setLineNumbers,
+  overwriteText,
+  setOverwriteText,
+  overwriteTextEnabled,
+  isLoading,
+  execRun,
 }) => {
-  const createText = async () => {
-    const { extract } = await import('../utils/monaco')
-    const result = await extract(code, language)
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: 'CREATE_TEXT',
-          result,
-          fontFamily,
-          fontSize,
-        },
-      },
-      '*',
-    )
-  }
-
   const monaco = useMonaco()
 
   const themes = useMemo(
-    () => toSelectOptions(Object.keys(themeMap).concat(defaultThemeNames)),
+    () => toSelectOptions(Object.keys(themeMap), prepareThemeName),
     [],
   )
   const fonts = toSelectOptions(monoFontFamilies)
   const languages = useMemo(
     () =>
       toSelectOptions(
-        monaco?.languages.getLanguages().map((_) => _.id) ?? ['typescript'],
+        monaco?.languages.getLanguages().map((_) => _.aliases?.[0] ?? _.id) ?? [
+          'TypeScript',
+        ],
         (_) => _.toLowerCase(),
       ),
     [monaco],
   )
-
-  console.log({ themes, themeName })
 
   return (
     <div
@@ -83,18 +86,23 @@ export const Sidebar: FC<{
           onChange={(_) => setThemeName((_.value as unknown) as ThemeName)}
         />
         <div className="flex">
-          <Select
-            options={fonts}
-            placeholder="Select font"
-            defaultValue={fontFamily}
-            onChange={(_) => setFontFamily(_.value as string)}
-          />
-          <Input
-            placeholder="Font size"
-            defaultValue={fontSize}
-            type="number"
-            onChange={(_) => setFontSize(parseInt(_))}
-          />
+          <div className="flex-shrink-0 w-2/3">
+            <Select
+              options={fonts}
+              placeholder="Select font"
+              defaultValue={fontFamily}
+              className="wide-dropdown"
+              onChange={(_) => setFontFamily(_.value as string)}
+            />
+          </div>
+          <div className="flex-shrink-0 w-1/3">
+            <Input
+              placeholder="Font size"
+              defaultValue={fontSize}
+              type="number"
+              onChange={(_) => setFontSize(parseInt(_))}
+            />
+          </div>
         </div>
       </div>
       <div className="w-full h-px bg-gray-200" />
@@ -105,6 +113,11 @@ export const Sidebar: FC<{
           placeholder="Select language"
           defaultValue={language}
           onChange={(_) => setLanguage(_.value as string)}
+        />
+        <Checkbox
+          label="Include background"
+          defaultValue={includeBackground}
+          onChange={setIncludeBackground}
         />
         <Checkbox
           defaultValue={lineNumbers}
@@ -124,10 +137,20 @@ export const Sidebar: FC<{
       </div>
       <div className="p-2">
         <Title size="small">Actions</Title>
-        <Checkbox label="Overwrite selected text" />
+        <Checkbox
+          label="Overwrite selected text"
+          defaultValue={!overwriteTextEnabled ? false : overwriteText}
+          onChange={setOverwriteText}
+          isDisabled={!overwriteTextEnabled}
+        />
         <div className="p-2">
-          <Button isSecondary onClick={createText}>
-            Run plugin
+          <Button isSecondary onClick={execRun} isDisabled={isLoading}>
+            <span>Run plugin</span>
+            {isLoading && (
+              <div className="transform scale-75">
+                <Icon className="animate-spin fix-icon" name="spinner" />
+              </div>
+            )}
           </Button>
         </div>
       </div>

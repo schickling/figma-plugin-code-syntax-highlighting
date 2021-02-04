@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 
-const Main: FC = () => {
+const Iframe: FC = () => {
   const iframe = useRef<HTMLIFrameElement>(null)
   useEffect(() => {
     onmessage = (event) => {
@@ -22,4 +22,4 @@ const Main: FC = () => {
   )
 }
 
-ReactDOM.render(<Main />, document.getElementById('iframe'))
+ReactDOM.render(<Iframe />, document.getElementById('iframe'))

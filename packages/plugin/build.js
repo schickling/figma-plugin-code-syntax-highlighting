@@ -20,6 +20,9 @@ build({
   entry: 'src/ops/plugin.ts',
   outfile: 'build/plugin.js',
   bundle: true,
+  sourcemap: 'inline',
+  target: 'es6',
+  minify: false,
 })
 
 const htmlTemplate = (js, css) => `\

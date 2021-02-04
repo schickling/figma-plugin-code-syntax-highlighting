@@ -12,3 +12,19 @@ label::before {
 /* * {
   white-space: nowrap;
 } */
+
+/* Needed to make dropdowns wider */
+.wide-dropdown .select-menu__menu--active {
+  width: 184px;
+}
+
+.select-menu__item-icon {
+  /* width: 4px !important; */
+  flex-shrink: 0;
+  /* display: none; */
+}
+
+/* Needed to fix icon centering */
+.icon.fix-icon {
+  background-position: 0;
+}

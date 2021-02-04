@@ -6,7 +6,7 @@ import React, { FC, useEffect } from 'react'
 // import { cssFromTheme } from '../utils/cssFromThemeNew'
 import Editor, { useMonaco } from '@monaco-editor/react'
 import { reactTypes } from '../utils/react-typings'
-import { themeMap, ThemeName } from '../themes'
+import { themeMap, ThemeName } from '../../shared/themes'
 
 import type * as monaco from 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -14,6 +14,7 @@ import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+import { prepareThemeName } from '../utils/monaco'
 ;(window as any)['MonacoEnvironment'] = {
   getWorker(_: any, label: string) {
     if (label === 'json') {
@@ -60,8 +61,6 @@ export const Prism: FC<{
 
   useEffect(() => {
     if (monaco) {
-      console.log({ monaco })
-
       monaco.languages.registerDocumentFormattingEditProvider('javascript', {
         async provideDocumentFormattingEdits(model) {
           const prettier = await import('prettier/standalone')
@@ -105,8 +104,8 @@ export const Prism: FC<{
         `file:///node_modules/@react/types/index.d.ts`,
       )
 
-      Object.entries(themeMap).forEach(([themeName, themeData]) => {
-        monaco.editor.defineTheme(themeName, themeData)
+      Object.entries(themeMap).forEach(([themeName_, themeData]) => {
+        monaco.editor.defineTheme(prepareThemeName(themeName_), themeData)
       })
     }
   }, [monaco])
@@ -122,9 +121,11 @@ export const Prism: FC<{
         width="100%"
         language={language}
         value={code}
-        onChange={setCode}
+        onChange={(_) => setCode(_!)}
         onMount={(editor) => setEditor(editor)}
         options={{
+          'semanticHighlighting.enabled': true,
+          theme: themeName,
           minimap: { enabled: false },
           folding: false,
           scrollBeyondLastLine: false,
@@ -140,15 +141,17 @@ export const Prism: FC<{
           showUnused: false,
           fontSize,
           fontFamily,
-
-          theme: themeName,
-
-          // hover: { enabled: false },
-          // readOnly: true,
+          fontLigatures: true,
+          lineDecorationsWidth: 10,
+          showFoldingControls: undefined,
+          foldingHighlight: false,
           renderLineHighlight: 'none',
+          occurrencesHighlight: false,
+          highlightActiveIndentGuide: false,
+          renderIndentGuides: false,
+          overviewRulerLanes: 0,
           scrollbar: {
-            vertical: 'hidden',
-            useShadows: false,
+            // useShadows: false,
           },
         }}
       />
