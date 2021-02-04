@@ -15,7 +15,7 @@ const Iframe: FC = () => {
   })
   return (
     <iframe
-      src="http://localhost:3000"
+      src={process.env['APP_URL']}
       className="w-full h-full"
       ref={iframe}
     />

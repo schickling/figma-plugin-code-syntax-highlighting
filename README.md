@@ -5,3 +5,7 @@
 # Patches
 
 - `has-symbols`: https://github.com/inspect-js/has-symbols/issues/4
+
+# Resolutions
+
+- `@types/react` + `@types/react-dom`: Because some package is using another React version which causes build-time type errors for `packages/plugin`

@@ -1,7 +1,0 @@
-{
-  "api": "1.0.0",
-  "id": "938793197191698232",
-  "name": "Code Syntax Highlighter (Dev)",
-  "main": "build/plugin.js",
-  "ui": "build/ui.html"
-}

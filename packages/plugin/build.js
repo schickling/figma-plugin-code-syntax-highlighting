@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 
 // @ts-check
-const { build } = require('estrella')
+const { build, cliopts } = require('estrella')
 const path = require('path')
 const fs = require('fs')
 const fetch = require('node-fetch').default
+
+const isDev = cliopts.watch
+const buildDirSuffix = isDev ? 'dev' : 'prod'
+const buildDir = `build-${buildDirSuffix}`
+
+const appUrl = isDev ? 'http://localhost:3000' : 'https://figma-code.vercel.app'
 
 build({
   entry: 'src/ui/ui.tsx',
@@ -12,18 +18,23 @@ build({
   sourcemap: 'inline',
   // minify: false,
   // loader: { '.ttf': 'dataurl' },
-  define: { 'process.env.NODE_ENV': 'development' },
+  define: {
+    'process.env.NODE_ENV': 'development',
+    'process.env.APP_URL': appUrl,
+  },
   onEnd: callback('main'),
 })
 
 build({
   entry: 'src/plugin/plugin.ts',
-  outfile: 'build/plugin.js',
+  outfile: `${buildDir}/plugin.js`,
   bundle: true,
   sourcemap: 'inline',
   target: 'es6',
   minify: false,
 })
+
+makeManifest()
 
 const htmlTemplate = (js, css) => `\
 <html>
@@ -69,8 +80,26 @@ async function makeHTML() {
   ).then((_) => _.text())
 
   const content = htmlTemplate(cache['main'], css)
-  const filePath = path.join(__dirname, 'build/ui.html')
-  fs.mkdirSync(path.join(__dirname, 'build'), { recursive: true })
+  const filePath = path.join(__dirname, buildDir, 'ui.html')
+  fs.mkdirSync(path.join(__dirname, buildDir), { recursive: true })
   fs.writeFileSync(filePath, content)
   console.log(`Wrote ${filePath}`)
+}
+
+async function makeManifest() {
+  const name = isDev
+    ? 'Code Syntax Highlighter (Dev)'
+    : 'Code Syntax Highlighter'
+  const data = {
+    api: '1.0.0',
+    id: '938793197191698232',
+    name,
+    main: 'plugin.js',
+    ui: 'ui.html',
+  }
+  await fs.promises.mkdir(path.join(__dirname, buildDir), { recursive: true })
+  await fs.promises.writeFile(
+    path.join(__dirname, buildDir, 'manifest.json'),
+    JSON.stringify(data, null, 2),
+  )
 }

@@ -2,6 +2,8 @@ node_modules
 .DS_Store
 dist
 build
+build-dev
+build-prod
 
 .yarn/cache
 .yarn/build-state.yml

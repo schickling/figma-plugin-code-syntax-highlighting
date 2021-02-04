@@ -260,10 +260,14 @@ __metadata:
     "@monaco-editor/react": ^4.0.9
     "@types/css-font-loading-module": ^0.0.4
     "@types/prettier": ^2.1.6
+    "@types/react": ^17.0.1
+    "@types/react-dom": ^17.0.0
     "@vitejs/plugin-react-refresh": ^1.2.2
     monaco-editor: 0.21.2
     postcss: ^8.2.4
     prettier: ^2.2.1
+    react: ^17.0.1
+    react-dom: ^17.0.1
     react-figma-plugin-ds: ^2.0.5
     tailwindcss: ^2.0.2
     typescript: ^4.1.3
@@ -377,16 +381,6 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 7ca9351b6c2523327cd7afe40082a37034898f65e9d86700236682efed910ba7c9cec10e9a3b829aa7b804b18791a28743ce468fcb42e9a788bfc33b84137e45
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:*":
-  version: 17.0.0
-  resolution: "@types/react@npm:17.0.0"
-  dependencies:
-    "@types/prop-types": "*"
-    csstype: ^3.0.2
-  checksum: dcef2034b822a949c5528fa8fa3c64da654fdbb822bd8f0488c0084d84cadb8b90af68813a6c95153d4754079f50b1cab206552c7c20f6b67a26c3641383fe31
   languageName: node
   linkType: hard
 
