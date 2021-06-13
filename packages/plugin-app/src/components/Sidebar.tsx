@@ -3,7 +3,6 @@ import { Input, Select, Title, Button, Checkbox, Icon } from 'react-figma-plugin
 import type { SelectOption } from 'react-figma-plugin-ds'
 import { themeMap } from '@internal/plugin-shared'
 import type * as monaco from 'monaco-editor'
-import { useMonaco } from '@monaco-editor/react'
 import { BUNDLED_LANGUAGES, BUNDLED_THEMES, Lang, Theme } from 'shiki'
 import { toSelectOptions } from '../utils/figma-ds'
 import { capitalize, identity } from '../utils'
@@ -51,8 +50,6 @@ export const Sidebar: FC<{
   execRun,
   isLoading,
 }) => {
-  const monaco = useMonaco()
-
   const themes = useMemo(() => toSelectOptions({ values: BUNDLED_THEMES, getValue: identity, getLabel: identity }), [])
   const fonts = toSelectOptions({ values: monoFontFamilies, getLabel: identity, getValue: identity })
   const languages = useMemo(
