@@ -13,7 +13,7 @@ const loadedFonts: string[] = []
 //   }
 // }
 
-export async function loadFont(fontFamily: string): Promise<void> {
+export const loadFont = async (fontFamily: string): Promise<void> => {
   if (!loadedFonts.includes(fontFamily)) {
     loadedFonts.push(fontFamily)
     const styleEl = document.createElement('style')

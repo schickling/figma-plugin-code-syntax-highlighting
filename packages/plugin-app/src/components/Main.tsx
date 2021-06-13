@@ -1,40 +1,32 @@
 import React, { useState, useEffect } from 'react'
-import { Prism } from './Prism'
 import { Sidebar } from './Sidebar'
-import {
-  themeMap,
-  ThemeName,
-  isRunDoneMessage,
-  isSelectionChangeMessage,
-  RunMessage,
-} from '@internal/plugin-shared'
+import { isRunDoneMessage, isSelectionChangeMessage, RunMessage } from '@internal/plugin-shared'
 import { editor } from 'monaco-editor'
 import * as monaco from 'monaco-editor'
 import { loadFont } from '../utils/font-loader'
-import { prepareThemeName } from '../utils/monaco'
+import { Editor } from './Editor'
+import { usePersistedState } from '../utils/hooks'
+import { formatText } from '../utils/prettier'
+import { Lang, Theme } from 'shiki'
 
-// NOTE this is needed to use the global monaco instance for both the extractor and the React wrapper
-window.monaco = monaco
+const defaultCode = `\
+// Select some text in Figma ...
+// or paste your code snippet here
+`
 
 const Main: React.FC = () => {
-  const [themeName, setThemeName] = useState<ThemeName>('Monokai')
-  const [code, setCode] = useState(
-    '// Select some text in Figma ...\n// or paste your code snippet here',
-  )
-  const [language, setLanguage] = useState('typescript')
-  const [lineNumbers, setLineNumbers] = useState(true)
+  const [themeName, setThemeName] = usePersistedState<Theme>({ initialValue: 'github-dark', storageKey: 'theme' })
+  const [code, setCode] = usePersistedState({ initialValue: defaultCode, storageKey: 'code' })
+  const [language, setLanguage] = usePersistedState<Lang>({ initialValue: 'typescript', storageKey: 'lang' })
+  const [lineNumbers, setLineNumbers] = usePersistedState({ initialValue: true, storageKey: 'line-numbers' })
   const [overwriteText, setOverwriteText] = useState(false)
   const [overwriteTextEnabled, setOverwriteTextEnabled] = useState(false)
   const [includeBackground, setIncludeBackground] = useState(false)
   const [fontFamily, setFontFamily] = useState('Courier')
   const [fontSize, setFontSize] = useState(13)
-  const [monoFontFamilies, setMonoFontFamilies] = useState<string[]>([
-    'Courier',
-  ])
+  const [monoFontFamilies, setMonoFontFamilies] = useState<string[]>(['Courier'])
   const [isLoading, setIsLoading] = useState(false)
-  const [editor, setEditor] = useState<
-    editor.IStandaloneCodeEditor | undefined
-  >(undefined)
+  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | undefined>(undefined)
 
   useEffect(() => {
     onmessage = (event) => {
@@ -66,39 +58,30 @@ const Main: React.FC = () => {
   const execRun = async () => {
     setIsLoading(true)
     // TODO move up
-    const { extract } = await import('../../../plugin-shared/src/monaco')
-    const themeData = Object.entries(themeMap).find(
-      ([_]) => prepareThemeName(_) === themeName,
-    )![1]
-    const result = await extract({
-      code,
-      language,
-      theme: { name: themeName, data: themeData },
-    })
-    const runMessage: RunMessage = {
-      type: 'RUN',
-      result,
-      fontFamily,
-      fontSize,
-      overwriteText,
-      includeBackground,
-    }
-    parent.postMessage({ pluginMessage: runMessage }, '*')
+    // const { extract } = await import('../../../plugin-shared/src/monaco')
+    // const themeData = Object.entries(themeMap).find(([_]) => prepareThemeName(_) === themeName)![1]
+    // const result = await extract({
+    //   code,
+    //   language,
+    //   theme: { name: themeName, data: themeData },
+    // })
+    // const runMessage: RunMessage = {
+    //   type: 'RUN',
+    //   result,
+    //   fontFamily,
+    //   fontSize,
+    //   overwriteText,
+    //   includeBackground,
+    // }
+    // parent.postMessage({ pluginMessage: runMessage }, '*')
   }
+
+  const runPrettier = () => setCode(formatText(code))
 
   return (
     <div className="flex w-full h-full">
-      <Prism
-        {...{
-          code,
-          setCode,
-          themeName,
-          language,
-          lineNumbers,
-          setEditor,
-          fontSize,
-          fontFamily,
-        }}
+      <Editor
+        {...{ themeName, fontFamily, fontSize, lineNumbers, text: code, setText: setCode, lineHeight: fontSize * 1.5 }}
       />
       <Sidebar
         {...{
@@ -119,6 +102,7 @@ const Main: React.FC = () => {
           setFontFamily: asyncSetFontFamily,
           editor,
           monoFontFamilies,
+          runPrettier,
           execRun,
           isLoading,
         }}

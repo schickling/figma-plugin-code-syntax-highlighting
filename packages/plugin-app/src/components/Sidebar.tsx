@@ -1,25 +1,20 @@
 import React, { FC, useMemo } from 'react'
-import {
-  Input,
-  Select,
-  Title,
-  Button,
-  Checkbox,
-  Icon,
-} from 'react-figma-plugin-ds'
+import { Input, Select, Title, Button, Checkbox, Icon } from 'react-figma-plugin-ds'
 import type { SelectOption } from 'react-figma-plugin-ds'
-import { themeMap, ThemeName } from '@internal/plugin-shared'
+import { themeMap } from '@internal/plugin-shared'
 import type * as monaco from 'monaco-editor'
 import { useMonaco } from '@monaco-editor/react'
-import { prepareThemeName } from '../utils/monaco'
+import { BUNDLED_LANGUAGES, BUNDLED_THEMES, Lang, Theme } from 'shiki'
+import { toSelectOptions } from '../utils/figma-ds'
+import { capitalize, identity } from '../utils'
 
 export const Sidebar: FC<{
   monoFontFamilies: string[]
   editor: monaco.editor.IStandaloneCodeEditor | undefined
-  themeName: ThemeName
-  setThemeName: (_: ThemeName) => void
-  language: string
-  setLanguage: (_: string) => void
+  themeName: Theme
+  setThemeName: (_: Theme) => void
+  language: Lang
+  setLanguage: (_: Lang) => void
   fontSize: number
   setFontSize: (_: number) => void
   fontFamily: string
@@ -31,6 +26,7 @@ export const Sidebar: FC<{
   overwriteText: boolean
   setOverwriteText: (_: boolean) => void
   overwriteTextEnabled: boolean
+  runPrettier: () => void
   execRun: () => void
   isLoading: boolean
 }> = ({
@@ -51,39 +47,28 @@ export const Sidebar: FC<{
   overwriteText,
   setOverwriteText,
   overwriteTextEnabled,
-  isLoading,
+  runPrettier,
   execRun,
+  isLoading,
 }) => {
   const monaco = useMonaco()
 
-  const themes = useMemo(
-    () => toSelectOptions(Object.keys(themeMap), prepareThemeName),
-    [],
-  )
-  const fonts = toSelectOptions(monoFontFamilies)
+  const themes = useMemo(() => toSelectOptions({ values: BUNDLED_THEMES, getValue: identity, getLabel: identity }), [])
+  const fonts = toSelectOptions({ values: monoFontFamilies, getLabel: identity, getValue: identity })
   const languages = useMemo(
-    () =>
-      toSelectOptions(
-        monaco?.languages.getLanguages().map((_) => _.aliases?.[0] ?? _.id) ?? [
-          'TypeScript',
-        ],
-        (_) => _.toLowerCase(),
-      ),
-    [monaco],
+    () => toSelectOptions({ values: BUNDLED_LANGUAGES, getLabel: (_) => capitalize(_.id), getValue: (_) => _.id }),
+    [],
   )
 
   return (
-    <div
-      className="flex-shrink-0 h-full overflow-y-scroll bg-white border-l border-gray-200"
-      style={{ width: 201 }}
-    >
+    <div className="flex-shrink-0 h-full overflow-y-scroll bg-white border-l border-gray-200" style={{ width: 201 }}>
       <div className="p-2">
         <Title size="small">Theme &amp; Font</Title>
         <Select
           options={themes}
           placeholder="Select theme"
           defaultValue={themeName}
-          onChange={(_) => setThemeName((_.value as unknown) as ThemeName)}
+          onChange={(_) => setThemeName(_.value as unknown as Theme)}
         />
         <div className="flex">
           <div className="flex-shrink-0 w-2/3">
@@ -112,25 +97,12 @@ export const Sidebar: FC<{
           options={languages}
           placeholder="Select language"
           defaultValue={language}
-          onChange={(_) => setLanguage(_.value as string)}
+          onChange={(_) => setLanguage(_.value as unknown as Lang)}
         />
-        <Checkbox
-          label="Include background"
-          defaultValue={includeBackground}
-          onChange={setIncludeBackground}
-        />
-        <Checkbox
-          defaultValue={lineNumbers}
-          onChange={setLineNumbers}
-          label="Line numbers"
-        />
+        <Checkbox label="Include background" defaultValue={includeBackground} onChange={setIncludeBackground} />
+        <Checkbox defaultValue={lineNumbers} onChange={setLineNumbers} label="Line numbers" />
         <div className="p-2">
-          <Button
-            isSecondary
-            onClick={() =>
-              editor?.getAction('editor.action.formatDocument').run()
-            }
-          >
+          <Button isSecondary onClick={runPrettier}>
             Use Prettier
           </Button>
         </div>
@@ -157,8 +129,3 @@ export const Sidebar: FC<{
     </div>
   )
 }
-
-const toSelectOptions = (
-  values: string[],
-  mapValue: (_: string) => string = (_) => _,
-): SelectOption[] => values.map((_) => ({ label: _, value: mapValue(_) }))
