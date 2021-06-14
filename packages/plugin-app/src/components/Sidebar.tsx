@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useState } from 'react'
 import React, { useMemo } from 'react'
 import { Button, Checkbox, Icon, Input, Select, Title } from 'react-figma-plugin-ds'
 import type { Lang, Theme } from 'shiki'
@@ -24,7 +25,7 @@ export const Sidebar: FC<{
   overwriteExisting: boolean
   setOverwriteExisting: (_: boolean) => void
   overwriteExistingEnabled: boolean
-  runPrettier: () => void
+  runPrettier: () => Promise<void>
   execRun: () => void
   isFigmaLoading: boolean
 }> = ({
@@ -54,6 +55,12 @@ export const Sidebar: FC<{
     () => toSelectOptions({ values: BUNDLED_LANGUAGES, getLabel: (_) => capitalize(_.id), getValue: (_) => _.id }),
     [],
   )
+  const [prettierIsLoading, setPrettierIsLoading] = useState(false)
+  const runPrettier_ = async () => {
+    setPrettierIsLoading(true)
+    await runPrettier().catch((_) => console.log(_))
+    setPrettierIsLoading(false)
+  }
 
   return (
     <div
@@ -106,8 +113,13 @@ export const Sidebar: FC<{
             isDisabled={!includeBackground}
           />
           <div className="p-2">
-            <Button isSecondary onClick={runPrettier}>
-              Use Prettier
+            <Button isSecondary onClick={runPrettier_}>
+              <span>Use Prettier</span>
+              {prettierIsLoading && (
+                <div className="transform scale-75">
+                  <Icon className="animate-spin fix-icon" name="spinner" />
+                </div>
+              )}
             </Button>
           </div>
         </div>

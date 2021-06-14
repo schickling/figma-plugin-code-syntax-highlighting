@@ -9,7 +9,6 @@ import { makeExposedPromise } from '../utils'
 import type { Env } from '../utils/fonts'
 import { loadBrowserFonts, useFonts } from '../utils/fonts'
 import { useAsyncMemo, usePersistedState } from '../utils/hooks'
-import { formatText } from '../utils/prettier'
 import { Editor } from './Editor'
 import { Sidebar } from './Sidebar'
 
@@ -69,7 +68,6 @@ const Main: React.FC = () => {
         if (msg.isText) {
           setCode(msg.selection!.text)
           setFontSize(msg.selection!.fontSize)
-          console.log(msg.selection?.fontSize)
         }
         setOverwriteExistingEnabled(msg.isText)
       } else if (isRunDoneMessage(msg)) {
@@ -96,7 +94,10 @@ const Main: React.FC = () => {
     parent.postMessage({ pluginMessage: runMessage }, '*')
   }
 
-  const runPrettier = () => setCode(formatText(code, language))
+  const runPrettier = async () => {
+    const { formatText } = await import('../utils/prettier')
+    setCode(formatText(code, language))
+  }
 
   if (fontRes.isLoading || isHighlighterLoading) {
     return (
