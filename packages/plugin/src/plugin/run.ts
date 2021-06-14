@@ -241,7 +241,7 @@ const colorStringToPaint = (color: ColorString, opacity?: number): Paint => {
       g: normalize(rgba.g),
       b: normalize(rgba.b),
     },
-    opacity: opacity ?? rgba.a,
+    opacity: opacity ?? normalize(rgba.a),
   }
 }
 
@@ -266,7 +266,7 @@ const parseColorString = (str: ColorString): ColorRGBA => {
   const a = parseInt(str.slice(6, 8), 16)
 
   if (Number.isNaN(a)) {
-    return { r, g, b, a: 1 }
+    return { r, g, b, a: 255 }
   } else {
     return { r, g, b, a }
   }
