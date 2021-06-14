@@ -6,7 +6,7 @@
   },
   "include": ["./src"],
   "references": [
-    { "path": "../react-figma-plugin-ds" },
+    // { "path": "../react-figma-plugin-ds" },
     { "path": "../plugin-shared" }
   ]
 }

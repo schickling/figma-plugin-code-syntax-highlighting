@@ -1,3 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @layer base {
+  code {
+    font-family: inherit;
+  }
+} */
+
 html,
 body,
 #root {
@@ -27,4 +37,17 @@ label::before {
 /* Needed to fix icon centering */
 .icon.fix-icon {
   background-position: 0;
+}
+
+.shiki {
+  height: 100%;
+}
+
+.shiki,
+.shiki * {
+  font-family: inherit;
+}
+
+.shiki code {
+  display: block;
 }

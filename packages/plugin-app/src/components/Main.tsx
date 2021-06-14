@@ -1,40 +1,60 @@
-import React, { useState, useEffect } from 'react'
-import { Prism } from './Prism'
-import { Sidebar } from './Sidebar'
-import {
-  themeMap,
-  ThemeName,
-  isRunDoneMessage,
-  isSelectionChangeMessage,
-  RunMessage,
-} from '@internal/plugin-shared'
-import { editor } from 'monaco-editor'
-import * as monaco from 'monaco-editor'
-import { loadFont } from '../utils/font-loader'
-import { prepareThemeName } from '../utils/monaco'
+import type { RunMessage } from '@internal/plugin-shared'
+import { isRunDoneMessage, isSelectionChangeMessage } from '@internal/plugin-shared'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Icon } from 'react-figma-plugin-ds'
+import type { Lang, Theme } from 'shiki'
+import * as shiki from 'shiki'
 
-// NOTE this is needed to use the global monaco instance for both the extractor and the React wrapper
-window.monaco = monaco
+import { makeExposedPromise } from '../utils'
+import type { Env } from '../utils/fonts'
+import { loadBrowserFonts, useFonts } from '../utils/fonts'
+import { useAsyncMemo, usePersistedState } from '../utils/hooks'
+import { formatText } from '../utils/prettier'
+import { Editor } from './Editor'
+import { Sidebar } from './Sidebar'
+
+const defaultCode = `\
+// Select some text in Figma ...
+// or paste your code snippet here
+`
+
+const env: Env = new URLSearchParams(location.search).get('env') === 'figma' ? 'Figma' : 'Browser'
+console.log(`Detected plugin env: ${env}`)
 
 const Main: React.FC = () => {
-  const [themeName, setThemeName] = useState<ThemeName>('Monokai')
-  const [code, setCode] = useState(
-    '// Select some text in Figma ...\n// or paste your code snippet here',
+  const availableFigmaFonts = useMemo(() => makeExposedPromise<string[]>(), [])
+  const fontRes = useFonts({
+    resolveAvailableFonts: () => (env === 'Figma' ? availableFigmaFonts.promise : loadBrowserFonts()),
+  })
+
+  const [themeName, setThemeName] = usePersistedState<Theme>({ initialValue: 'github-dark', storageKey: 'theme' })
+  const [code, setCode] = usePersistedState({ initialValue: defaultCode, storageKey: 'code' })
+  const [language, setLanguage] = usePersistedState<Lang>({ initialValue: 'typescript', storageKey: 'lang' })
+  const [includeLineNumbers, setIncludeLineNumbers] = usePersistedState({
+    initialValue: false,
+    storageKey: 'line-numbers',
+  })
+  const [overwriteExisting, setOverwriteExisting] = usePersistedState({
+    initialValue: false,
+    storageKey: 'overwrite-text',
+  })
+  const [overwriteExistingEnabled, setOverwriteExistingEnabled] = useState(false)
+  const [includeBackground, setIncludeBackground] = usePersistedState({
+    initialValue: true,
+    storageKey: 'include-background',
+  })
+  const [fontSize, setFontSize] = usePersistedState({ initialValue: 13, storageKey: 'font-size' })
+
+  const highlighter = useAsyncMemo(() => shiki.getHighlighter({ theme: themeName }), [themeName])
+  const isHighlighterLoading = useMemo(() => highlighter === undefined, [highlighter])
+  const shikiTokens = useMemo(() => highlighter?.codeToThemedTokens(code, language), [highlighter, code, language])
+
+  const [isFigmaLoading, setIsFigmaLoading] = useState(false)
+
+  const themeData = useMemo(
+    () => (highlighter ? { bg: highlighter?.getBackgroundColor(), fg: highlighter?.getForegroundColor() } : undefined),
+    [highlighter],
   )
-  const [language, setLanguage] = useState('typescript')
-  const [lineNumbers, setLineNumbers] = useState(true)
-  const [overwriteText, setOverwriteText] = useState(false)
-  const [overwriteTextEnabled, setOverwriteTextEnabled] = useState(false)
-  const [includeBackground, setIncludeBackground] = useState(false)
-  const [fontFamily, setFontFamily] = useState('Courier')
-  const [fontSize, setFontSize] = useState(13)
-  const [monoFontFamilies, setMonoFontFamilies] = useState<string[]>([
-    'Courier',
-  ])
-  const [isLoading, setIsLoading] = useState(false)
-  const [editor, setEditor] = useState<
-    editor.IStandaloneCodeEditor | undefined
-  >(undefined)
 
   useEffect(() => {
     onmessage = (event) => {
@@ -47,80 +67,87 @@ const Main: React.FC = () => {
 
       if (isSelectionChangeMessage(msg)) {
         if (msg.isText) {
-          setCode(msg.selection!)
+          setCode(msg.selection!.text)
+          setFontSize(msg.selection!.fontSize)
+          console.log(msg.selection?.fontSize)
         }
-        setOverwriteTextEnabled(msg.isText)
+        setOverwriteExistingEnabled(msg.isText)
       } else if (isRunDoneMessage(msg)) {
-        setIsLoading(false)
+        setIsFigmaLoading(false)
       } else if (event.data.pluginMessage.type === 'AVAILABLE_FONTS') {
-        setMonoFontFamilies(event.data.pluginMessage.monoFontFamilies)
+        availableFigmaFonts.resolve(event.data.pluginMessage.monoFontFamilies)
       }
     }
-  })
-
-  const asyncSetFontFamily = async (fontFamily: string) => {
-    await loadFont(fontFamily)
-    setFontFamily(fontFamily)
-  }
+  }, [setCode, setFontSize, availableFigmaFonts])
 
   const execRun = async () => {
-    setIsLoading(true)
-    // TODO move up
-    const { extract } = await import('../../../plugin-shared/src/monaco')
-    const themeData = Object.entries(themeMap).find(
-      ([_]) => prepareThemeName(_) === themeName,
-    )![1]
-    const result = await extract({
-      code,
-      language,
-      theme: { name: themeName, data: themeData },
-    })
+    setIsFigmaLoading(true)
+
     const runMessage: RunMessage = {
       type: 'RUN',
-      result,
-      fontFamily,
+      shikiTokens: shikiTokens!,
+      themeData: themeData!,
+      fontFamily: fontRes.fontResult!.activeFont,
       fontSize,
-      overwriteText,
+      overwriteExisting: overwriteExisting && overwriteExistingEnabled,
       includeBackground,
+      includeLineNumbers: includeBackground && includeLineNumbers,
     }
     parent.postMessage({ pluginMessage: runMessage }, '*')
   }
 
+  const runPrettier = () => setCode(formatText(code, language))
+
+  if (fontRes.isLoading || isHighlighterLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <div className="flex items-center space-x-1 text-sm text-gray-700">
+          <div className="transform scale-75">
+            <Icon className="animate-spin fix-icon" name="spinner" />
+          </div>
+          <div>Loading ...</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex w-full h-full">
-      <Prism
+      <Editor
         {...{
-          code,
-          setCode,
           themeName,
-          language,
-          lineNumbers,
-          setEditor,
+          fontFamily: fontRes.fontResult.activeFont,
           fontSize,
-          fontFamily,
+          shikiTokens: shikiTokens!,
+          themeData: themeData!,
+          includeLineNumbers: includeLineNumbers,
+          language,
+          code: code,
+          setCode: setCode,
+          lineHeight: fontSize * 1.5,
         }}
       />
       <Sidebar
         {...{
-          lineNumbers,
-          setLineNumbers,
+          lineNumbers: includeLineNumbers,
+          setLineNumbers: setIncludeLineNumbers,
           includeBackground,
           setIncludeBackground,
-          overwriteText,
-          setOverwriteText,
-          overwriteTextEnabled,
+          overwriteExisting,
+          setOverwriteExisting,
+          overwriteExistingEnabled,
           themeName,
           setThemeName,
           language,
           setLanguage,
           fontSize,
           setFontSize,
-          fontFamily,
-          setFontFamily: asyncSetFontFamily,
-          editor,
-          monoFontFamilies,
+          fontFamily: fontRes.fontResult.activeFont,
+          setFontFamily: fontRes.fontResult.setActiveFont,
+          monoFontFamilies: fontRes.fontResult.availableFonts,
+          runPrettier,
           execRun,
-          isLoading,
+          isFigmaLoading,
         }}
       />
     </div>

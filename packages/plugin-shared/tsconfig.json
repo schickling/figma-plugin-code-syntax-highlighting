@@ -6,6 +6,6 @@
     "outDir": "./dist",
     "resolveJsonModule": true
   },
-  "include": ["./src/**/*", "./src/**/*.json", "../plugin-app/src/global.d.ts"],
+  "include": ["./src/**/*", "./src/**/*.json"],
   "references": []
 }

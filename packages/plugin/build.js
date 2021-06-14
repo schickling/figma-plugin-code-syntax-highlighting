@@ -10,24 +10,26 @@ const isDev = cliopts.watch
 const buildDirSuffix = isDev ? 'dev' : 'prod'
 const buildDir = `build-${buildDirSuffix}`
 
-const appUrl = isDev ? 'http://localhost:3000' : 'https://figma-code.vercel.app'
+const appUrl = isDev ? '"http://localhost:3000"' : '"https://figma-code.vercel.app"'
 
 build({
-  entry: 'src/ui/ui.tsx',
+  entry: 'src/ui/index.tsx',
   bundle: true,
   sourcemap: 'inline',
   // minify: false,
   // loader: { '.ttf': 'dataurl' },
   define: {
-    'process.env.NODE_ENV': 'development',
+    'process.env.NODE_ENV': '"development"',
     'process.env.APP_URL': appUrl,
   },
   onEnd: callback('main'),
 })
 
 build({
-  entry: 'src/plugin/plugin.ts',
+  entry: 'src/plugin/index.ts',
   outfile: `${buildDir}/plugin.js`,
+  // needed to compile `shiki`
+  external: ['fs', 'path'],
   bundle: true,
   sourcemap: 'inline',
   target: 'es6',
@@ -75,9 +77,7 @@ async function makeHTML() {
     return
   }
 
-  const css = await fetch(
-    'https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css',
-  ).then((_) => _.text())
+  const css = await fetch('https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css').then((_) => _.text())
 
   const content = htmlTemplate(cache['main'], css)
   const filePath = path.join(__dirname, buildDir, 'ui.html')
@@ -87,9 +87,7 @@ async function makeHTML() {
 }
 
 async function makeManifest() {
-  const name = isDev
-    ? 'Code Syntax Highlighter (Dev)'
-    : 'Code Syntax Highlighter'
+  const name = isDev ? 'Code Syntax Highlighter (Dev)' : 'Code Syntax Highlighter'
   const data = {
     api: '1.0.0',
     id: '938793197191698232',
@@ -98,8 +96,5 @@ async function makeManifest() {
     ui: 'ui.html',
   }
   await fs.promises.mkdir(path.join(__dirname, buildDir), { recursive: true })
-  await fs.promises.writeFile(
-    path.join(__dirname, buildDir, 'manifest.json'),
-    JSON.stringify(data, null, 2),
-  )
+  await fs.promises.writeFile(path.join(__dirname, buildDir, 'manifest.json'), JSON.stringify(data, null, 2))
 }
