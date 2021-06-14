@@ -1,4 +1,5 @@
-import { DependencyList, useEffect, useMemo, useState } from 'react'
+import type { DependencyList } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export const useAsyncMemo = <T>(fn: () => Promise<T>, deps: DependencyList): T | undefined => {
   const [val, setVal] = useState<T | undefined>(undefined)
@@ -22,10 +23,10 @@ export const usePersistedState = <T>({
   const persistedVal = useMemo(() => {
     const jsonVal = localStorage.getItem(storageKey)
     return jsonVal ? JSON.parse(jsonVal) : undefined
-  }, [])
+  }, [storageKey])
   const [val, setVal] = useState<T>(persistedVal ?? initialValue)
 
-  let timeout: NodeJS.Timeout
+  let timeout: number | undefined = undefined
   const updateValue = (_: T) => {
     setVal(_)
     clearTimeout(timeout)
@@ -42,7 +43,7 @@ export const usePersistedState = <T>({
     }
 
     return () => clearTimeout(timeout)
-  }, [initialValue, storageKey, storageDebounceMs])
+  }, [initialValue, storageKey, storageDebounceMs, timeout])
 
   return [val, updateValue]
 }

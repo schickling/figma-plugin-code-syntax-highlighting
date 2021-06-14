@@ -1,4 +1,4 @@
-import { SelectOption } from 'react-figma-plugin-ds'
+import type { SelectOption } from 'react-figma-plugin-ds'
 
 export const toSelectOptions = <T>({
   values,

@@ -1,16 +1,14 @@
 // NOTE import directly from source to avoid bundling of monaco-editor
 // TOOD clean this up
-import {
-  isRunMessage,
-  RunDoneMessage,
-  SelectionChangeMessage,
-} from '@internal/plugin-shared/src/event-messages'
-import { FontStyles } from '@internal/plugin-shared/src/run'
+import type { RunDoneMessage, SelectionChangeMessage } from '@internal/plugin-shared/src/event-messages'
+import { isRunMessage } from '@internal/plugin-shared/src/event-messages'
+import type { FontStyles } from '@internal/plugin-shared/src/run'
 import { pick } from '@internal/plugin-shared/src/utils'
+
 import { run } from './run'
 
 figma.showUI(__html__)
-figma.ui.resize(660, 500)
+figma.ui.resize(760, 500)
 
 function updateSelection() {
   if (
@@ -18,10 +16,14 @@ function updateSelection() {
     figma.currentPage.selection.length === 1 &&
     figma.currentPage.selection[0].type === 'TEXT'
   ) {
+    const selection = figma.currentPage.selection[0]
     const message: SelectionChangeMessage = {
       type: 'SELECTION_CHANGE',
       isText: true,
-      selection: figma.currentPage.selection[0].characters,
+      selection: {
+        text: selection.characters,
+        fontSize: selection.fontSize as number,
+      },
     }
     figma.ui.postMessage(message)
   } else {
@@ -37,12 +39,11 @@ async function main() {
   updateSelection()
 
   const availableFonts = await figma.listAvailableFontsAsync()
+
   const monoFontFamilies = unique(
     availableFonts
       .map((_) => _.fontName.family)
-      .filter((_) =>
-        ['mono', 'code'].some((monoish) => _.toLowerCase().includes(monoish)),
-      ),
+      .filter((_) => ['mono', 'code'].some((monoish) => _.toLowerCase().includes(monoish))),
   )
   figma.ui.postMessage({ type: 'AVAILABLE_FONTS', monoFontFamilies })
 
@@ -56,10 +57,12 @@ async function main() {
         await run({
           ...pick(msg, [
             'fontFamily',
-            'result',
+            'shikiTokens',
+            'themeData',
             'fontSize',
-            'overwriteText',
+            'overwriteExisting',
             'includeBackground',
+            'includeLineNumbers',
           ]),
           fontStyles: getFontStyles(availableFonts, msg.fontFamily),
           selection: figma.currentPage.selection,
@@ -81,22 +84,13 @@ function unique(_: string[]): string[] {
   return Array.from(new Set(_))
 }
 
-function getFontStyles(
-  availableFonts: Font[],
-  selectedFontFamily: string,
-): FontStyles {
+const getFontStyles = (availableFonts: Font[], selectedFontFamily: string): FontStyles => {
   const fontStyles = availableFonts
     .map((_) => _.fontName)
     .filter((_) => _.family === selectedFontFamily)
     .map((_) => _.style)
-  const bold = ['Bold', 'Semibold'].find((boldish) =>
-    fontStyles.some((_) => _ === boldish),
-  )!
-  const italic = ['Italic'].find((italicish) =>
-    fontStyles.some((_) => _ === italicish),
-  )!
-  const normal = ['Regular', 'Medium'].find((normalish) =>
-    fontStyles.some((_) => _ === normalish),
-  )!
+  const bold = ['Bold', 'Semibold'].find((boldish) => fontStyles.some((_) => _ === boldish))!
+  const italic = ['Italic'].find((italicish) => fontStyles.some((_) => _ === italicish))!
+  const normal = ['Regular', 'Medium'].find((normalish) => fontStyles.some((_) => _ === normalish))!
   return { bold, italic, normal }
 }

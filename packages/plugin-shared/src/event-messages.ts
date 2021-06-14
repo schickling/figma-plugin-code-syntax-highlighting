@@ -1,4 +1,4 @@
-import { RunArgs } from './run'
+import type { RunArgs } from './run'
 
 export type RunMessage = { type: 'RUN' } & Omit<RunArgs, 'fontStyles'>
 
@@ -8,13 +8,14 @@ export function isRunMessage(message: any): message is RunMessage {
 
 export type SelectionChangeMessage = {
   type: 'SELECTION_CHANGE'
-  selection?: string
+  selection?: {
+    text: string
+    fontSize: number
+  }
   isText: boolean
 }
 
-export function isSelectionChangeMessage(
-  message: any,
-): message is SelectionChangeMessage {
+export function isSelectionChangeMessage(message: any): message is SelectionChangeMessage {
   return message?.type === 'SELECTION_CHANGE'
 }
 

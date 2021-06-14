@@ -4,6 +4,7 @@
     "allowSyntheticDefaultImports": true,
     // Needed for iterator in ./src/plugin/run.ts
     "downlevelIteration": true,
+    "outDir": "./dist",
     "jsx": "react"
   },
   "include": ["./src"],

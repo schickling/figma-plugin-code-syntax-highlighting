@@ -11,3 +11,4 @@ build-prod
 .yarn/unplugged
 
 *.tsbuildinfo
+.vercel

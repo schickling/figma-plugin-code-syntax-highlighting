@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useRef } from 'react'
+import type { FC } from 'react'
+import React, { useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 
 const Iframe: FC = () => {
@@ -13,13 +14,7 @@ const Iframe: FC = () => {
       console.log('frame', { event })
     }
   })
-  return (
-    <iframe
-      src={process.env['APP_URL']}
-      className="w-full h-full"
-      ref={iframe}
-    />
-  )
+  return <iframe src={`${process.env.APP_URL}?env=figma`} className="w-full h-full" ref={iframe} />
 }
 
 ReactDOM.render(<Iframe />, document.getElementById('iframe'))
