@@ -97,6 +97,7 @@ const Main: React.FC = () => {
   }
 
   const runPrettier = async () => {
+    // NOTE we're lazy-loading prettier in order to speed up the initial load time
     const { formatText } = await import('../utils/prettier')
     const formattedCode = await formatText(code, language)
     setCode(formattedCode)
