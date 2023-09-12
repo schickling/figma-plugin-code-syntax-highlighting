@@ -15,6 +15,22 @@
         "showReuseMessage": false,
         "clear": true
       }
-    }
+    },
+    {
+      "label": "dev:ts",
+      "type": "shell",
+      "command": "direnv exec . yarn dev:ts",
+      "problemMatcher": [
+        "$tsc-watch"
+      ],
+      "isBackground": true,
+      "presentation": {
+        "focus": false,
+        "panel": "shared",
+        "group": "dev",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    },
   ]
 }

@@ -21,11 +21,13 @@ export const Editor: FC<{
   const lineCount = useMemo(() => code.split('\n').length, [code])
   // 20 for bottom padding
   const height = useMemo(() => lineCount * lineHeight + 20, [lineCount, lineHeight])
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
   return (
     <div
-      className="relative flex w-full h-full p-4 space-x-4 overflow-scroll"
+      className="relative flex w-full h-full p-4 space-x-4 overflow-scroll cursor-text"
       style={{ backgroundColor: themeData.bg, fontSize, lineHeight: `${lineHeight}px`, fontFamily }}
+      onClick={() => textareaRef.current !== document.activeElement && textareaRef.current?.focus()}
     >
       {includeLineNumbers && (
         <div style={{ color: themeData.fg }} className="text-right opacity-30">
@@ -36,6 +38,7 @@ export const Editor: FC<{
       )}
       <div className="relative w-max">
         <textarea
+        ref={textareaRef}
           style={{ caretColor: themeData.fg, height }}
           value={code}
           className="absolute w-full h-full text-transparent bg-transparent outline-none resize-none"

@@ -14,7 +14,7 @@ function updateSelection() {
   if (
     figma.currentPage.selection &&
     figma.currentPage.selection.length === 1 &&
-    figma.currentPage.selection[0].type === 'TEXT'
+    figma.currentPage.selection[0]!.type === 'TEXT'
   ) {
     const selection = figma.currentPage.selection[0]
     const message: SelectionChangeMessage = {
