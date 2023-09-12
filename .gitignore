@@ -12,3 +12,5 @@ build-prod
 
 *.tsbuildinfo
 .vercel
+
+.direnv
