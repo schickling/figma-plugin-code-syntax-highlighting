@@ -3,18 +3,21 @@
   "workspaces": [
     "./packages/*"
   ],
+  "scripts": {
+    "build:ts": "tsc --build tsconfig.all.json",
+    "build:clean": "bash -c \"find {apps,packages} -path '*node_modules*' -prune -o -name 'dist' -type d -exec rm -rf {} +\"",
+    "dev:ts": "yarn build:ts --watch"
+  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.26.1",
-    "@typescript-eslint/parser": "^4.26.1",
-    "eslint": "^7.28.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-simple-import-sort": "^7.0.0",
-    "typescript": "^4.3.2"
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "typescript": "^5.2.2"
   },
   "resolutions": {
-    "has-symbols": "patch:has-symbols@1.0.1#./.patches/has-symbols.patch",
-    "@types/react": "^17.0.1",
-    "@types/react-dom": "^17.0.0"
+    "has-symbols": "patch:has-symbols@1.0.1#./.patches/has-symbols.patch"
   }
 }

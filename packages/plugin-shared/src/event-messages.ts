@@ -6,6 +6,10 @@ export function isRunMessage(message: any): message is RunMessage {
   return message?.type === 'RUN'
 }
 
+export function isInitMessage(message: any): message is RunMessage {
+  return message?.type === 'INIT'
+}
+
 export type SelectionChangeMessage = {
   type: 'SELECTION_CHANGE'
   selection?: {

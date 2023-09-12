@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import React, { useEffect, useRef } from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 const Iframe: FC = () => {
   const iframe = useRef<HTMLIFrameElement>(null)
@@ -17,4 +17,4 @@ const Iframe: FC = () => {
   return <iframe src={`${process.env.APP_URL}?env=figma`} className="w-full h-full" ref={iframe} />
 }
 
-ReactDOM.render(<Iframe />, document.getElementById('iframe'))
+createRoot(document.getElementById('iframe')!).render(<Iframe />)

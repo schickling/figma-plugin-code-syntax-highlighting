@@ -1,7 +1,7 @@
 // NOTE import directly from source to avoid bundling of monaco-editor
 // TOOD clean this up
 import type { RunDoneMessage, SelectionChangeMessage } from '@internal/plugin-shared/src/event-messages'
-import { isRunMessage } from '@internal/plugin-shared/src/event-messages'
+import { isInitMessage, isRunMessage } from '@internal/plugin-shared/src/event-messages'
 import type { FontStyles } from '@internal/plugin-shared/src/run'
 import { pick } from '@internal/plugin-shared/src/utils'
 
@@ -14,7 +14,7 @@ function updateSelection() {
   if (
     figma.currentPage.selection &&
     figma.currentPage.selection.length === 1 &&
-    figma.currentPage.selection[0].type === 'TEXT'
+    figma.currentPage.selection[0]!.type === 'TEXT'
   ) {
     const selection = figma.currentPage.selection[0]
     const message: SelectionChangeMessage = {
@@ -45,14 +45,15 @@ async function main() {
       .map((_) => _.fontName.family)
       .filter((_) => ['mono', 'code'].some((monoish) => _.toLowerCase().includes(monoish))),
   )
-  figma.ui.postMessage({ type: 'AVAILABLE_FONTS', monoFontFamilies })
 
   figma.on('selectionchange', updateSelection)
 
   figma.ui.onmessage = async (msg) => {
     console.log({ msg })
 
-    if (isRunMessage(msg)) {
+    if (isInitMessage(msg)) {
+      figma.ui.postMessage({ type: 'AVAILABLE_FONTS', monoFontFamilies })
+    } else if (isRunMessage(msg)) {
       try {
         await run({
           ...pick(msg, [
