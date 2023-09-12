@@ -1,4 +1,5 @@
 import type { DependencyList } from 'react'
+import React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
 export const useAsyncMemo = <T>(fn: () => Promise<T>, deps: DependencyList): T | undefined => {
@@ -6,7 +7,7 @@ export const useAsyncMemo = <T>(fn: () => Promise<T>, deps: DependencyList): T |
 
   useEffect(() => {
     fn().then((_) => setVal(_))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 
   return val
@@ -27,15 +28,18 @@ export const usePersistedState = <T>({
   }, [storageKey])
   const [val, setVal] = useState<T>(persistedVal ?? initialValue)
 
-  let timeout: number | undefined = undefined
-  const updateValue = (_: T) => {
-    setVal(_)
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      const jsonVal = JSON.stringify(_)
-      localStorage.setItem(storageKey, jsonVal)
-    }, storageDebounceMs)
-  }
+  const timeoutRef = React.useRef<number | undefined>(undefined)
+  const updateValue = React.useCallback(
+    (_: T) => {
+      setVal(_)
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = setTimeout(() => {
+        const jsonVal = JSON.stringify(_)
+        localStorage.setItem(storageKey, jsonVal)
+      }, storageDebounceMs)
+    },
+    [storageDebounceMs, storageKey],
+  )
 
   useEffect(() => {
     const jsonVal = localStorage.getItem(storageKey)
@@ -43,8 +47,8 @@ export const usePersistedState = <T>({
       setVal(JSON.parse(jsonVal))
     }
 
-    return () => clearTimeout(timeout)
-  }, [initialValue, storageKey, storageDebounceMs, timeout])
+    return () => clearTimeout(timeoutRef.current)
+  }, [initialValue, storageKey, storageDebounceMs])
 
   return [val, updateValue]
 }

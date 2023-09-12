@@ -4,13 +4,12 @@
 const { build, cliopts } = require('estrella')
 const path = require('path')
 const fs = require('fs')
-const fetch = require('node-fetch').default
 
 const isDev = cliopts.watch
 const buildDirSuffix = isDev ? 'dev' : 'prod'
 const buildDir = `build-${buildDirSuffix}`
 
-const appUrl = isDev ? '"http://localhost:3000"' : '"https://figma-code.vercel.app"'
+const appUrl = isDev ? '"http://localhost:5173"' : '"https://figma-code.vercel.app"'
 
 build({
   entry: 'src/ui/index.tsx',
@@ -46,6 +45,7 @@ const htmlTemplate = (js, css) => `\
     <style>
     ${css}
     </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <div id="iframe"></div>
@@ -77,7 +77,8 @@ async function makeHTML() {
     return
   }
 
-  const css = await fetch('https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css').then((_) => _.text())
+  // const css = await fetch('https://cdn.tailwindcss.com').then((_) => _.text())
+  const css = ''
 
   const content = htmlTemplate(cache['main'], css)
   const filePath = path.join(__dirname, buildDir, 'ui.html')
@@ -94,6 +95,7 @@ async function makeManifest() {
     name,
     main: 'plugin.js',
     ui: 'ui.html',
+    editorType: ["figma", ...(isDev ? ["dev"] : [])]
   }
   await fs.promises.mkdir(path.join(__dirname, buildDir), { recursive: true })
   await fs.promises.writeFile(path.join(__dirname, buildDir, 'manifest.json'), JSON.stringify(data, null, 2))

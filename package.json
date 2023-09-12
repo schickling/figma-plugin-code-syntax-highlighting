@@ -18,8 +18,6 @@
     "typescript": "^5.2.2"
   },
   "resolutions": {
-    "has-symbols": "patch:has-symbols@1.0.1#./.patches/has-symbols.patch",
-    "@types/react": "^17.0.1",
-    "@types/react-dom": "^17.0.0"
+    "has-symbols": "patch:has-symbols@1.0.1#./.patches/has-symbols.patch"
   }
 }

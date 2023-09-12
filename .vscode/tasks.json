@@ -8,6 +8,7 @@
       "type": "shell",
       "command": "yarn dev",
       "options": { "cwd": "${workspaceFolder}/packages/plugin-app" },
+      "problemMatcher": [],
       "presentation": {
         "focus": false,
         "panel": "shared",

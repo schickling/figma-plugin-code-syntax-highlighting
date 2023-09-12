@@ -8,7 +8,6 @@
     "shiki": "^0.9.3"
   },
   "devDependencies": {
-    "@figma/plugin-typings": "^1.76.0",
-    "@types/color": "^3.0.4"
+    "@figma/plugin-typings": "^1.76.0"
   }
 }

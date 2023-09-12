@@ -76,6 +76,8 @@ const Main: React.FC = () => {
         availableFigmaFonts.resolve(event.data.pluginMessage.monoFontFamilies)
       }
     }
+
+    parent.postMessage({ pluginMessage: { type: 'INIT' } }, '*')
   }, [setCode, setFontSize, availableFigmaFonts])
 
   const execRun = async () => {
@@ -96,7 +98,8 @@ const Main: React.FC = () => {
 
   const runPrettier = async () => {
     const { formatText } = await import('../utils/prettier')
-    setCode(formatText(code, language))
+    const formattedCode = await formatText(code, language)
+    setCode(formattedCode)
   }
 
   if (fontRes.isLoading || isHighlighterLoading) {
@@ -126,6 +129,7 @@ const Main: React.FC = () => {
           code: code,
           setCode: setCode,
           lineHeight: fontSize * 1.5,
+          env,
         }}
       />
       <Sidebar
