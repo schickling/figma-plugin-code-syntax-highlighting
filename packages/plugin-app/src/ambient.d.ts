@@ -3,3 +3,7 @@
 interface Window {
   monaco: typeof import('monaco-editor')
 }
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

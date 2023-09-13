@@ -152,7 +152,9 @@ export const Sidebar: FC<{
         </div>
       </div>
       <div className="flex justify-between p-4 text-xs">
-        <span className="text-black/20">v1.2.0</span>
+        <span className="text-black/20" title={import.meta.env.VITE_GIT_COMMIT}>
+          v1.2.0
+        </span>
         <div className="space-x-2 text-blue-500">
           <a
             href="https://www.notion.so/schickling/Figma-Code-Syntax-Highlighter-03408cb2d60846a3a1b7b0506224834f"
