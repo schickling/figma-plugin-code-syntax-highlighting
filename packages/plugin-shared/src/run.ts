@@ -1,9 +1,9 @@
-import type * as shiki from 'shiki'
+import type * as shiki from 'shikiji'
 
 import type { ThemeData } from './types'
 
 export type RunArgs = {
-  shikiTokens: shiki.IThemedToken[][]
+  shikiTokens: shiki.ThemedToken[][]
   themeData: ThemeData
   fontFamily: string
   fontStyles: FontStyles

@@ -2,8 +2,8 @@ import type { RunMessage } from '@internal/plugin-shared'
 import { isRunDoneMessage, isSelectionChangeMessage } from '@internal/plugin-shared'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from 'react-figma-plugin-ds'
-import type { Lang, Theme } from 'shiki'
-import * as shiki from 'shiki'
+import type { BuiltinLanguage, BuiltinTheme } from 'shikiji'
+import * as shiki from 'shikiji'
 
 import { makeExposedPromise } from '../utils'
 import type { Env } from '../utils/fonts'
@@ -26,9 +26,12 @@ const Main: React.FC = () => {
     resolveAvailableFonts: () => (env === 'Figma' ? availableFigmaFonts.promise : loadBrowserFonts()),
   })
 
-  const [themeName, setThemeName] = usePersistedState<Theme>({ initialValue: 'github-dark', storageKey: 'theme' })
+  const [themeName, setThemeName] = usePersistedState<BuiltinTheme>({
+    initialValue: 'github-dark',
+    storageKey: 'theme',
+  })
   const [code, setCode] = usePersistedState({ initialValue: defaultCode, storageKey: 'code' })
-  const [language, setLanguage] = usePersistedState<Lang>({ initialValue: 'typescript', storageKey: 'lang' })
+  const [language, setLanguage] = usePersistedState<BuiltinLanguage>({ initialValue: 'typescript', storageKey: 'lang' })
   const [includeLineNumbers, setIncludeLineNumbers] = usePersistedState({
     initialValue: false,
     storageKey: 'line-numbers',
@@ -44,16 +47,18 @@ const Main: React.FC = () => {
   })
   const [fontSize, setFontSize] = usePersistedState({ initialValue: 13, storageKey: 'font-size' })
 
-  const highlighter = useAsyncMemo(() => shiki.getHighlighter({ theme: themeName }), [themeName])
+  const highlighter = useAsyncMemo(
+    () => shiki.getHighlighter({ themes: [themeName], langs: [language] }),
+    [themeName, language],
+  )
   const isHighlighterLoading = useMemo(() => highlighter === undefined, [highlighter])
-  const shikiTokens = useMemo(() => highlighter?.codeToThemedTokens(code, language), [highlighter, code, language])
-
+  const shikiTokens = useMemo(() => highlighter?.codeToThemedTokens(code, {}), [highlighter, code])
   const [isFigmaLoading, setIsFigmaLoading] = useState(false)
 
-  const themeData = useMemo(
-    () => (highlighter ? { bg: highlighter?.getBackgroundColor(), fg: highlighter?.getForegroundColor() } : undefined),
-    [highlighter],
-  )
+  const themeData = useMemo(() => {
+    const theme = highlighter?.getTheme(themeName)
+    return theme ? { bg: theme.bg, fg: theme.fg } : undefined
+  }, [highlighter, themeName])
 
   useEffect(() => {
     onmessage = (event) => {
@@ -123,8 +128,9 @@ const Main: React.FC = () => {
           themeName,
           fontFamily: fontRes.fontResult.activeFont,
           fontSize,
-          shikiTokens: shikiTokens!,
           themeData: themeData!,
+          theme: themeName,
+          highlighter: highlighter!,
           includeLineNumbers: includeLineNumbers,
           language,
           code: code,

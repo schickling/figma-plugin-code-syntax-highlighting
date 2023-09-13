@@ -1,5 +1,5 @@
 import type { ColorRGBA, ColorString, RunArgs } from '@internal/plugin-shared'
-import type * as shiki from 'shiki'
+import type * as shiki from 'shikiji'
 
 export const enum FontStyle {
   NotSet = -1,
@@ -54,7 +54,7 @@ export const run = async ({
   // textNode.layoutGrow = 1
 
   let currentCharOffset = 0
-  const styleLine = (lines: Iterator<shiki.IThemedToken[], shiki.IThemedToken[]>, resolve: Function) => {
+  const styleLine = (lines: Iterator<shiki.ThemedToken[], shiki.ThemedToken[]>, resolve: Function) => {
     const line = lines.next()
 
     if (line.done) {
