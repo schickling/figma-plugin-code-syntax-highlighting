@@ -519,6 +519,7 @@ __metadata:
     "@types/prettier": ^3.0.0
     "@types/react": ^18.2.21
     "@types/react-dom": ^18.2.7
+    "@vercel/analytics": ^1.0.2
     "@vitejs/plugin-react-refresh": ^1.3.6
     autoprefixer: ^10.4.15
     postcss: ^8.4.29
@@ -838,6 +839,13 @@ __metadata:
   version: 1.2.0
   resolution: "@ungap/structured-clone@npm:1.2.0"
   checksum: 4f656b7b4672f2ce6e272f2427d8b0824ed11546a601d8d5412b9d7704e83db38a8d9f402ecdf2b9063fc164af842ad0ec4a55819f621ed7e7ea4d1efcc74524
+  languageName: node
+  linkType: hard
+
+"@vercel/analytics@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@vercel/analytics@npm:1.0.2"
+  checksum: 5f596db6ed3c959057927985ffc6394ab12f9a5e9e9c65d00a33f1ffb3a7ced95d63f33b31e746939e50c0284d7999b90e9ed5d3d1e8b0d37a135219fd93a6e4
   languageName: node
   linkType: hard
 

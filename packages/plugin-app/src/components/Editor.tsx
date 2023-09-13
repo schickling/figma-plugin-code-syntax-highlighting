@@ -12,7 +12,6 @@ import { readTextFromClipboard, writeTextToClipboard } from '../utils/clipboard'
 export const Editor: FC<{
   code: string
   setCode: (_: string) => unknown
-  shikiTokens: shiki.ThemedToken[][]
   highlighter: shiki.Highlighter
   themeData: ThemeData
   language: string
@@ -25,7 +24,6 @@ export const Editor: FC<{
 }> = ({
   code,
   setCode,
-  shikiTokens,
   themeData,
   language,
   theme,
@@ -36,7 +34,10 @@ export const Editor: FC<{
   fontFamily,
   env,
 }) => {
-  const highlightedText = useMemo(() => highlighter.codeToHtml(code, { lang: language, theme }), [code])
+  const highlightedText = useMemo(
+    () => highlighter.codeToHtml(code, { lang: language, theme }),
+    [code, highlighter, language, theme],
+  )
   const lineCount = useMemo(() => code.split('\n').length, [code])
   // 20 for bottom padding
   const height = useMemo(() => lineCount * lineHeight + 20, [lineCount, lineHeight])

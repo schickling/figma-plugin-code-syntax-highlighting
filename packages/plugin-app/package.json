@@ -9,6 +9,7 @@
   "dependencies": {
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "@vercel/analytics": "^1.0.2",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

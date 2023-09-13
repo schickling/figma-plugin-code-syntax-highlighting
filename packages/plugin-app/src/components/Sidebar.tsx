@@ -57,9 +57,9 @@ export const Sidebar: FC<{
   const languages = useMemo(
     () =>
       toSelectOptions({
-        values: Object.entries(bundledLanguages),
-        getLabel: ([id]) => capitalize(id),
-        getValue: ([_id, val]) => _id,
+        values: Object.keys(bundledLanguages),
+        getLabel: (id) => capitalize(id),
+        getValue: (id) => id,
       }),
     [],
   )

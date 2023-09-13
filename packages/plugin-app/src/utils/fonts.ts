@@ -58,7 +58,7 @@ export const useFonts = ({
     resolveAvailableFonts().then((availableFonts_) => {
       setAvailableFonts(availableFonts_)
       if (!activeFont || !availableFonts_.includes(activeFont)) {
-        setActiveFont(availableFonts_[0])
+        setActiveFont(availableFonts_[0]!)
       }
 
       setIsLoading(false)

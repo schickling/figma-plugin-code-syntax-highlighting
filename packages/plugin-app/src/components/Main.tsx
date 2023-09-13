@@ -128,7 +128,6 @@ const Main: React.FC = () => {
           themeName,
           fontFamily: fontRes.fontResult.activeFont,
           fontSize,
-          shikiTokens: shikiTokens!,
           themeData: themeData!,
           theme: themeName,
           highlighter: highlighter!,
