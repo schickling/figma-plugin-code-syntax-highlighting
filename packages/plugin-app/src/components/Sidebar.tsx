@@ -152,7 +152,7 @@ export const Sidebar: FC<{
         </div>
       </div>
       <div className="flex justify-between p-4 text-xs">
-        <span className="text-black/20" title={import.meta.env.VITE_GIT_COMMIT}>
+        <span className="text-black/20" title={import.meta.env.VITE_GIT_COMMIT?.slice(0, 7) ?? 'no commit found'}>
           v1.2.0
         </span>
         <div className="space-x-2 text-blue-500">

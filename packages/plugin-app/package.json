@@ -2,8 +2,8 @@
   "name": "@internal/plugin-app",
   "private": true,
   "scripts": {
-    "dev": "VITE_GIT_COMMIT=$(git rev-parse HEAD | cut -c 1-7) vite",
-    "build": "bash -c 'VITE_GIT_COMMIT=${VERCEL_GIT_COMMIT_SHA:-$(git rev-parse HEAD)}; VITE_GIT_COMMIT=${VITE_GIT_COMMIT:0:7}; vite build'",
+    "dev": "VITE_GIT_COMMIT=$(git rev-parse HEAD) vite",
+    "build": "bash -c 'VITE_GIT_COMMIT=${VERCEL_GIT_COMMIT_SHA:-$(git rev-parse HEAD)} vite build'",
     "serve": "vite preview"
   },
   "dependencies": {
