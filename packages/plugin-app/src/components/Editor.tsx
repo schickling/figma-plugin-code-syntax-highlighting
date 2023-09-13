@@ -3,11 +3,7 @@ import type { FC } from 'react'
 import React, { useMemo } from 'react'
 import type * as shiki from 'shikiji'
 
-// import wasm from 'shiki/dist/onigasm.wasm?url'
 import { readTextFromClipboard, writeTextToClipboard } from '../utils/clipboard'
-
-// shiki.setOnigasmWASM(wasm)
-// shiki.setCDN('./assets/shiki/')
 
 export const Editor: FC<{
   code: string
@@ -34,10 +30,8 @@ export const Editor: FC<{
   fontFamily,
   env,
 }) => {
-  const highlightedText = useMemo(
-    () => highlighter.codeToHtml(code, { lang: language, theme }),
-    [code, highlighter, language, theme],
-  )
+  // TODO fix eslint
+  const highlightedText = useMemo(() => highlighter.codeToHtml(code, { lang: language, theme }), [code, highlighter])
   const lineCount = useMemo(() => code.split('\n').length, [code])
   // 20 for bottom padding
   const height = useMemo(() => lineCount * lineHeight + 20, [lineCount, lineHeight])

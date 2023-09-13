@@ -3,5 +3,3 @@
 interface Window {
   monaco: typeof import('monaco-editor')
 }
-
-declare module 'shiki/dist/onigasm.wasm?url'
