@@ -1,5 +1,6 @@
 import type { RunMessage } from '@internal/plugin-shared'
 import { isRunDoneMessage, isSelectionChangeMessage } from '@internal/plugin-shared'
+import { Analytics } from '@vercel/analytics/react'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from 'react-figma-plugin-ds'
 import type { BuiltinLanguage, BuiltinTheme } from 'shikiji'
@@ -123,6 +124,7 @@ const Main: React.FC = () => {
 
   return (
     <div className="flex w-full h-full">
+      <Analytics />
       <Editor
         {...{
           themeName,
