@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "VITE_GIT_COMMIT=$(git rev-parse HEAD | cut -c 1-7) vite",
-    "build": "VITE_GIT_COMMIT=${VERCEL_GIT_COMMIT_SHA:0:7:-$(git rev-parse HEAD | cut -c 1-7)} vite build",
+    "build": "bash -c 'VITE_GIT_COMMIT=${VERCEL_GIT_COMMIT_SHA:0:7:-$(git rev-parse HEAD | cut -c 1-7)} vite build'",
     "serve": "vite preview"
   },
   "dependencies": {
