@@ -2,18 +2,18 @@ import type { FC } from 'react'
 import { useState } from 'react'
 import React, { useMemo } from 'react'
 import { Button, Checkbox, Icon, Input, Select, Title } from 'react-figma-plugin-ds'
-import type { Lang, Theme } from 'shiki'
-import { BUNDLED_LANGUAGES, BUNDLED_THEMES } from 'shiki'
+import type { BuiltinLanguage, BuiltinTheme } from 'shikiji'
+import { bundledLanguages, bundledThemes } from 'shikiji'
 
 import { capitalize, identity } from '../utils'
 import { toSelectOptions } from '../utils/figma-ds'
 
 export const Sidebar: FC<{
   monoFontFamilies: string[]
-  themeName: Theme
-  setThemeName: (_: Theme) => void
-  language: Lang
-  setLanguage: (_: Lang) => void
+  themeName: BuiltinTheme
+  setThemeName: (_: BuiltinTheme) => void
+  language: BuiltinLanguage
+  setLanguage: (_: BuiltinLanguage) => void
   fontSize: number
   setFontSize: (_: number) => void
   fontFamily: string
@@ -49,10 +49,18 @@ export const Sidebar: FC<{
   execRun,
   isFigmaLoading: isLoading,
 }) => {
-  const themes = useMemo(() => toSelectOptions({ values: BUNDLED_THEMES, getValue: identity, getLabel: identity }), [])
+  const themes = useMemo(
+    () => toSelectOptions({ values: Object.keys(bundledThemes), getValue: identity, getLabel: identity }),
+    [],
+  )
   const fonts = toSelectOptions({ values: monoFontFamilies, getLabel: identity, getValue: identity })
   const languages = useMemo(
-    () => toSelectOptions({ values: BUNDLED_LANGUAGES, getLabel: (_) => capitalize(_.id), getValue: (_) => _.id }),
+    () =>
+      toSelectOptions({
+        values: Object.entries(bundledLanguages),
+        getLabel: ([id]) => capitalize(id),
+        getValue: ([_id, val]) => _id,
+      }),
     [],
   )
   const [prettierIsLoading, setPrettierIsLoading] = useState(false)
@@ -69,12 +77,12 @@ export const Sidebar: FC<{
     >
       <div>
         <div className="p-2">
-          <Title size="small">Theme &amp; Font</Title>
+          <Title size="small">BuiltinTheme &amp; Font</Title>
           <Select
             options={themes}
             placeholder="Select theme"
             defaultValue={themeName}
-            onChange={(_) => setThemeName(_.value as unknown as Theme)}
+            onChange={(_) => setThemeName(_.value as unknown as BuiltinTheme)}
           />
           <div className="flex">
             <div className="flex-shrink-0 w-2/3">
@@ -103,7 +111,7 @@ export const Sidebar: FC<{
             options={languages}
             placeholder="Select language"
             defaultValue={language}
-            onChange={(_) => setLanguage(_.value as unknown as Lang)}
+            onChange={(_) => setLanguage(_.value as unknown as BuiltinLanguage)}
           />
           <Checkbox label="Include background" defaultValue={includeBackground} onChange={setIncludeBackground} />
           <Checkbox
@@ -143,14 +151,17 @@ export const Sidebar: FC<{
           </div>
         </div>
       </div>
-      <div className="flex justify-end p-4 space-x-2 text-xs text-blue-500">
-        <a
-          href="https://www.notion.so/schickling/Figma-Code-Syntax-Highlighter-03408cb2d60846a3a1b7b0506224834f"
-          target="_blank"
-        >
-          Website
-        </a>
-        <a href="mailto:schickling.j+figma@gmail.com">Contact</a>
+      <div className="flex justify-between p-4 text-xs">
+        <span className="text-black/20">v1.2.0</span>
+        <div className="space-x-2 text-blue-500">
+          <a
+            href="https://www.notion.so/schickling/Figma-Code-Syntax-Highlighter-03408cb2d60846a3a1b7b0506224834f"
+            target="_blank"
+          >
+            Website
+          </a>
+          <a href="mailto:schickling.j+figma@gmail.com">Contact</a>
+        </div>
       </div>
     </div>
   )

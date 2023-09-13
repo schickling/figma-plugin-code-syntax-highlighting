@@ -1,26 +1,42 @@
 import type { ThemeData } from '@internal/plugin-shared'
 import type { FC } from 'react'
 import React, { useMemo } from 'react'
-import * as shiki from 'shiki'
-import wasm from 'shiki/dist/onigasm.wasm?url'
+import type * as shiki from 'shikiji'
 
+// import wasm from 'shiki/dist/onigasm.wasm?url'
 import { readTextFromClipboard, writeTextToClipboard } from '../utils/clipboard'
 
-shiki.setOnigasmWASM(wasm)
-shiki.setCDN('./assets/shiki/')
+// shiki.setOnigasmWASM(wasm)
+// shiki.setCDN('./assets/shiki/')
 
 export const Editor: FC<{
   code: string
   setCode: (_: string) => unknown
-  shikiTokens: shiki.IThemedToken[][]
+  shikiTokens: shiki.ThemedToken[][]
+  highlighter: shiki.Highlighter
   themeData: ThemeData
+  language: string
+  theme: shiki.BuiltinTheme
   includeLineNumbers: boolean
   fontSize: number
   lineHeight: number
   fontFamily: string
   env: 'Figma' | 'Browser'
-}> = ({ code, setCode, shikiTokens, themeData, includeLineNumbers, fontSize, lineHeight, fontFamily, env }) => {
-  const highlightedText = useMemo(() => shiki.renderToHtml(shikiTokens, { ...themeData }), [shikiTokens, themeData])
+}> = ({
+  code,
+  setCode,
+  shikiTokens,
+  themeData,
+  language,
+  theme,
+  highlighter,
+  includeLineNumbers,
+  fontSize,
+  lineHeight,
+  fontFamily,
+  env,
+}) => {
+  const highlightedText = useMemo(() => highlighter.codeToHtml(code, { lang: language, theme }), [code])
   const lineCount = useMemo(() => code.split('\n').length, [code])
   // 20 for bottom padding
   const height = useMemo(() => lineCount * lineHeight + 20, [lineCount, lineHeight])

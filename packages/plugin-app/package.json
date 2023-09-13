@@ -2,11 +2,9 @@
   "name": "@internal/plugin-app",
   "private": true,
   "scripts": {
-    "postinstall": "run copy-shiki-assets",
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "copy-shiki-assets": "cp -R ../../node_modules/shiki/{themes,languages} ./public/assets/shiki"
+    "serve": "vite preview"
   },
   "dependencies": {
     "@types/react": "^18.2.21",
@@ -15,7 +13,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-figma-plugin-ds": "^2.3.0",
-    "shiki": "^0.9.3"
+    "shikiji": "^0.6.8"
   },
   "devDependencies": {
     "@types/css-font-loading-module": "^0.0.9",

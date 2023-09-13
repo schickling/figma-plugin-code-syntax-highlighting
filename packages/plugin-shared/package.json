@@ -5,7 +5,7 @@
   "dependencies": {
     "color": "^4.2.3",
     "monaco-editor": "0.25.0",
-    "shiki": "^0.9.3"
+    "shikiji": "^0.6.8"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.76.0"

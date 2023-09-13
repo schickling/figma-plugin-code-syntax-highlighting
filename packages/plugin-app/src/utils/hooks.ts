@@ -6,6 +6,10 @@ export const useAsyncMemo = <T>(fn: () => Promise<T>, deps: DependencyList): T |
   const [val, setVal] = useState<T | undefined>(undefined)
 
   useEffect(() => {
+    if (val !== undefined) {
+      setVal(undefined)
+    }
+
     fn().then((_) => setVal(_))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
