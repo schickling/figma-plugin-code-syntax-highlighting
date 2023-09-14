@@ -49,17 +49,20 @@ const Main: React.FC = () => {
   const [fontSize, setFontSize] = usePersistedState({ initialValue: 13, storageKey: 'font-size' })
 
   const highlighter = useAsyncMemo(
-    () => shiki.getHighlighter({ themes: [themeName], langs: [language] }),
+    () =>
+      shiki
+        .getHighlighter({ themes: [themeName], langs: [language] })
+        .then((highlighter) => ({ highlighter, themeName, language })),
     [themeName, language],
   )
   const isHighlighterLoading = useMemo(() => highlighter === undefined, [highlighter])
-  const shikiTokens = useMemo(() => highlighter?.codeToThemedTokens(code, {}), [highlighter, code])
+  const shikiTokens = useMemo(() => highlighter?.highlighter?.codeToThemedTokens(code, {}), [highlighter, code])
   const [isFigmaLoading, setIsFigmaLoading] = useState(false)
 
   const themeData = useMemo(() => {
-    const theme = highlighter?.getTheme(themeName)
+    const theme = highlighter?.highlighter.getTheme(highlighter.themeName)
     return theme ? { bg: theme.bg, fg: theme.fg } : undefined
-  }, [highlighter, themeName])
+  }, [highlighter])
 
   useEffect(() => {
     onmessage = (event) => {
@@ -131,10 +134,10 @@ const Main: React.FC = () => {
           fontFamily: fontRes.fontResult.activeFont,
           fontSize,
           themeData: themeData!,
-          theme: themeName,
-          highlighter: highlighter!,
+          theme: highlighter!.themeName,
+          highlighter: highlighter!.highlighter,
           includeLineNumbers: includeLineNumbers,
-          language,
+          language: highlighter!.language,
           code: code,
           setCode: setCode,
           lineHeight: fontSize * 1.5,
@@ -150,9 +153,9 @@ const Main: React.FC = () => {
           overwriteExisting,
           setOverwriteExisting,
           overwriteExistingEnabled,
-          themeName,
+          themeName: highlighter!.themeName,
           setThemeName,
-          language,
+          language: highlighter!.language,
           setLanguage,
           fontSize,
           setFontSize,

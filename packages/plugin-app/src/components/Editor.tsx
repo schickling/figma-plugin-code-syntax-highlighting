@@ -30,8 +30,10 @@ export const Editor: FC<{
   fontFamily,
   env,
 }) => {
-  // TODO fix eslint
-  const highlightedText = useMemo(() => highlighter.codeToHtml(code, { lang: language, theme }), [code, highlighter])
+  const highlightedText = useMemo(
+    () => highlighter.codeToHtml(code, { lang: language, theme }),
+    [code, highlighter, language, theme],
+  )
   const lineCount = useMemo(() => code.split('\n').length, [code])
   // 20 for bottom padding
   const height = useMemo(() => lineCount * lineHeight + 20, [lineCount, lineHeight])
