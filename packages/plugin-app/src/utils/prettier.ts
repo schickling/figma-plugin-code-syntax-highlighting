@@ -22,7 +22,7 @@ const getParser = (language: shiki.BuiltinLanguage): BuiltInParserName => {
     case 'tsx':
       return 'babel-ts'
     case 'jsx':
-      return 'babel'
+      return 'babel-ts'
     default:
       return 'babel'
   }
