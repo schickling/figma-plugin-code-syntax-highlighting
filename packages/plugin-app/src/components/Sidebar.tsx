@@ -7,7 +7,7 @@ import { bundledLanguages, bundledThemes } from 'shikiji'
 
 import { toSelectOptions } from '../utils/figma-ds.js'
 import { capitalize, identity } from '../utils/index.js'
-import { ComboBox } from './Combobox.jsx'
+import { ComboBox } from './ComboBox.jsx'
 
 export const Sidebar: FC<{
   monoFontFamilies: string[]
