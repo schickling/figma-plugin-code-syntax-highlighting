@@ -16,8 +16,5 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "typescript": "^5.2.2"
-  },
-  "resolutions": {
-    "has-symbols": "patch:has-symbols@1.0.1#./.patches/has-symbols.patch"
   }
 }

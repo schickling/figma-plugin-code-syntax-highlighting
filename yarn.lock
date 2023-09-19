@@ -5143,17 +5143,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-has-symbols@1.0.1:
-  version: 1.0.1
-  resolution: "has-symbols@npm:1.0.1"
-  checksum: 4f09be6682f9fc29855ded1101ad2a0f5d559d7d9ed68f7b68be1ea213c23991216d08d6585bf3ff6fded6f526cc506bda528d276f083602b55d232f132cfa27
-  languageName: node
-  linkType: hard
-
-"has-symbols@patch:has-symbols@1.0.1#./.patches/has-symbols.patch::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 1.0.1
-  resolution: "has-symbols@patch:has-symbols@npm%3A1.0.1#./.patches/has-symbols.patch::version=1.0.1&hash=75850d&locator=root-workspace-0b6124%40workspace%3A."
-  checksum: dfa9e29ee4b3e902cfad50e96d726656977fd266fb344aef976807c6fefc3d72712998b215ed1466428a244ed428d49191ec8ebf757d59924b12a5c81a5a670b
+"has-symbols@npm:^1.0.1":
+  version: 1.0.3
+  resolution: "has-symbols@npm:1.0.3"
+  checksum: a054c40c631c0d5741a8285010a0777ea0c068f99ed43e5d6eb12972da223f8af553a455132fdb0801bdcfa0e0f443c0c03a68d8555aa529b3144b446c3f2410
   languageName: node
   linkType: hard
 
