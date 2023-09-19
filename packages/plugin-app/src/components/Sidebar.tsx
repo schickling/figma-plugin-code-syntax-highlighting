@@ -152,14 +152,19 @@ export const Sidebar: FC<{
         </div>
       </div>
       <div className="justify-between p-3 text-[11px] flex items-end">
-        <div className="space-x-1 text-blue-500/70 flex">
-          <a href="https://github.com/sponsors/schickling" target="_blank">
+        <div className="space-x-1 flex ">
+          <a
+            href="https://github.com/sponsors/schickling"
+            target="_blank"
+            className="text-blue-500/70 hover:text-blue-500"
+          >
             ☕ Buy me a coffee
           </a>
           <span className="opacity-30">•</span>
           <a
             href="https://www.notion.so/schickling/Figma-Code-Syntax-Highlighter-03408cb2d60846a3a1b7b0506224834f"
             target="_blank"
+            className="text-blue-500/70 hover:text-blue-500"
           >
             Info
           </a>
