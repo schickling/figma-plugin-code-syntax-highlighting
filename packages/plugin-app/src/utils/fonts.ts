@@ -16,8 +16,6 @@ export const knownMonoGoogleFonts = [
   'JetBrains Mono',
 ]
 
-export type Env = 'Figma' | 'Browser'
-
 export type UseFontsReturn = { isLoading: true; fontResult: undefined } | { isLoading: false; fontResult: UseFontsData }
 
 export type UseFontsData = {

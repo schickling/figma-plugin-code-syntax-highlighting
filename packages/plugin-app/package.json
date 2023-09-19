@@ -10,8 +10,11 @@
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "@vercel/analytics": "^1.0.2",
+    "clsx": "^2.0.0",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
+    "react-aria": "^3.28.0",
+    "react-aria-components": "^1.0.0-beta.0",
     "react-dom": "^18.2.0",
     "react-figma-plugin-ds": "^2.3.0",
     "shikiji": "^0.6.8"

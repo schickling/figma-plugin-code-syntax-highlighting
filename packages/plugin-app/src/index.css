@@ -11,7 +11,7 @@
 html,
 body,
 #root {
-  height: 100%;
+  @apply h-full overflow-hidden;
 }
 
 /* Needed to avoid Figma UI2 problem with Tailwind */

@@ -3,7 +3,8 @@ import type { FC } from 'react'
 import React, { useMemo } from 'react'
 import type * as shiki from 'shikiji'
 
-import { readTextFromClipboard, writeTextToClipboard } from '../utils/clipboard'
+import { env } from '../utils/env.js'
+import { handleKeyDown } from '../utils/keydown.js'
 
 export const Editor: FC<{
   code: string
@@ -16,7 +17,6 @@ export const Editor: FC<{
   fontSize: number
   lineHeight: number
   fontFamily: string
-  env: 'Figma' | 'Browser'
 }> = ({
   code,
   setCode,
@@ -28,7 +28,6 @@ export const Editor: FC<{
   fontSize,
   lineHeight,
   fontFamily,
-  env,
 }) => {
   const highlightedText = useMemo(
     () => highlighter.codeToHtml(code, { lang: language, theme }),
@@ -58,28 +57,7 @@ export const Editor: FC<{
           style={{ caretColor: themeData.fg, height }}
           value={code}
           className="absolute w-full h-full text-transparent bg-transparent outline-none resize-none"
-          onKeyDown={(e) => {
-            if (env === 'Browser') return
-
-            // NOTE it seems common keyboard shortcuts are not working in Figma, so we have to implement them ourselves
-            if (e.metaKey && e.code === 'KeyA') {
-              e.preventDefault()
-              e.stopPropagation()
-              textareaRef.current?.select()
-            } else if (e.metaKey && e.code === 'KeyV') {
-              e.preventDefault()
-              e.stopPropagation()
-              readTextFromClipboard().then((text) => setCode(text))
-            } else if (e.metaKey && e.code === 'KeyC') {
-              e.preventDefault()
-              e.stopPropagation()
-              const selectedText = e.currentTarget.value.substring(
-                e.currentTarget.selectionStart,
-                e.currentTarget.selectionEnd,
-              )
-              writeTextToClipboard(selectedText)
-            }
-          }}
+          onKeyDown={(e) => handleKeyDown(e, env, textareaRef)}
           onChange={(e) => setCode(e.target.value)}
           autoCorrect="off"
           spellCheck="false"

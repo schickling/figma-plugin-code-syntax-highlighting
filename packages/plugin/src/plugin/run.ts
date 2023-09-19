@@ -22,7 +22,7 @@ export const run = async ({
   includeBackground,
   includeLineNumbers,
 }: RunArgs & { selection: readonly SceneNode[] }): Promise<void> => {
-  console.log({ shikiTokens, themeData, fontFamily, fontStyles, fontSize, overwriteExisting })
+  // console.log({ shikiTokens, themeData, fontFamily, fontStyles, fontSize, overwriteExisting })
 
   const normalFontName: FontName = {
     family: fontFamily,

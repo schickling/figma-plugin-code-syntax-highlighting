@@ -1,12 +1,13 @@
 import type { FC } from 'react'
 import { useState } from 'react'
 import React, { useMemo } from 'react'
-import { Button, Checkbox, Icon, Input, Select, Title } from 'react-figma-plugin-ds'
+import { Button, Checkbox, Icon, Input, Title } from 'react-figma-plugin-ds'
 import type { BuiltinLanguage, BuiltinTheme } from 'shikiji'
 import { bundledLanguages, bundledThemes } from 'shikiji'
 
-import { capitalize, identity } from '../utils'
-import { toSelectOptions } from '../utils/figma-ds'
+import { toSelectOptions } from '../utils/figma-ds.js'
+import { capitalize, identity } from '../utils/index.js'
+import { ComboBox } from './Combobox.jsx'
 
 export const Sidebar: FC<{
   monoFontFamilies: string[]
@@ -77,21 +78,20 @@ export const Sidebar: FC<{
     >
       <div>
         <div className="p-2">
-          <Title size="small">BuiltinTheme &amp; Font</Title>
-          <Select
-            options={themes}
-            placeholder="Select theme"
-            defaultValue={themeName}
-            onChange={(_) => setThemeName(_.value as unknown as BuiltinTheme)}
+          <Title size="small">Theme &amp; Font</Title>
+          <ComboBox
+            label="Select theme"
+            onChange={(_) => setThemeName(_ as BuiltinTheme)}
+            options={themes.map((_) => ({ id: _.value as string, label: _.label }))}
+            activeOption={{ id: themeName, label: themeName }}
           />
           <div className="flex">
             <div className="flex-shrink-0 w-2/3">
-              <Select
-                options={fonts}
-                placeholder="Select font"
-                defaultValue={fontFamily}
-                className="wide-dropdown"
-                onChange={(_) => setFontFamily(_.value as string)}
+              <ComboBox
+                label="Select font"
+                onChange={(_) => setFontFamily(_)}
+                options={fonts.map((_) => ({ id: _.value as string, label: _.label }))}
+                activeOption={{ id: fontFamily, label: fontFamily }}
               />
             </div>
             <div className="flex-shrink-0 w-1/3">
@@ -107,11 +107,11 @@ export const Sidebar: FC<{
         <div className="w-full h-px bg-gray-200" />
         <div className="p-2">
           <Title size="small">Options</Title>
-          <Select
-            options={languages}
-            placeholder="Select language"
-            defaultValue={language}
-            onChange={(_) => setLanguage(_.value as unknown as BuiltinLanguage)}
+          <ComboBox
+            label="Select language"
+            onChange={(_) => setLanguage(_ as BuiltinLanguage)}
+            options={languages.map((_) => ({ id: _.value as string, label: _.label }))}
+            activeOption={{ id: language, label: capitalize(language) }}
           />
           <Checkbox label="Include background" defaultValue={includeBackground} onChange={setIncludeBackground} />
           <Checkbox
@@ -151,18 +151,21 @@ export const Sidebar: FC<{
           </div>
         </div>
       </div>
-      <div className="flex justify-between p-4 text-xs">
-        <span className="text-black/20" title={import.meta.env.VITE_GIT_COMMIT?.slice(0, 7) ?? 'no commit found'}>
-          v1.2.0
-        </span>
-        <div className="space-x-2 text-blue-500">
+      <div className="justify-between p-3 text-[11px] flex items-end">
+        <div className="space-x-1 text-blue-500/70 flex">
+          <a href="https://github.com/sponsors/schickling" target="_blank">
+            ☕ Buy me a coffee
+          </a>
+          <span className="opacity-30">•</span>
           <a
             href="https://www.notion.so/schickling/Figma-Code-Syntax-Highlighter-03408cb2d60846a3a1b7b0506224834f"
             target="_blank"
           >
-            Website
+            Info
           </a>
-          <a href="mailto:schickling.j+figma@gmail.com">Contact</a>
+        </div>
+        <div className="text-black/20" title={import.meta.env.VITE_GIT_COMMIT?.slice(0, 7) ?? 'no commit found'}>
+          v1.2.1
         </div>
       </div>
     </div>

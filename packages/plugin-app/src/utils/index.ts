@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+
 export const identity = <T>(_: T): T => _
 
 export const capitalize = (_: string) => _.charAt(0).toUpperCase() + _.slice(1)
@@ -13,3 +15,5 @@ export const makeExposedPromise = <T>(): { promise: Promise<T>; resolve: (_: T) 
 
   return { promise, resolve: resolve! }
 }
+
+export const cn = clsx

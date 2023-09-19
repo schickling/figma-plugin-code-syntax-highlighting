@@ -7,7 +7,7 @@ import type { BuiltinLanguage, BuiltinTheme } from 'shikiji'
 import * as shiki from 'shikiji'
 
 import { makeExposedPromise } from '../utils'
-import type { Env } from '../utils/fonts'
+import { env } from '../utils/env'
 import { loadBrowserFonts, useFonts } from '../utils/fonts'
 import { useAsyncMemo, usePersistedState } from '../utils/hooks'
 import { Editor } from './Editor'
@@ -17,9 +17,6 @@ const defaultCode = `\
 // Select some text in Figma ...
 // or paste your code snippet here
 `
-
-const env: Env = new URLSearchParams(location.search).get('env') === 'figma' ? 'Figma' : 'Browser'
-console.log(`Detected plugin env: ${env}`)
 
 const Main: React.FC = () => {
   const availableFigmaFonts = useMemo(() => makeExposedPromise<string[]>(), [])
@@ -52,11 +49,17 @@ const Main: React.FC = () => {
     () =>
       shiki
         .getHighlighter({ themes: [themeName], langs: [language] })
+        // NOTE we're returning the `themeName` and `language` here so we have a "transactional" guarantee that the
+        // highlighter is always in sync with the theme and language
         .then((highlighter) => ({ highlighter, themeName, language })),
     [themeName, language],
   )
   const isHighlighterLoading = useMemo(() => highlighter === undefined, [highlighter])
-  const shikiTokens = useMemo(() => highlighter?.highlighter?.codeToThemedTokens(code, {}), [highlighter, code])
+  const shikiTokens = useMemo(
+    () =>
+      highlighter?.highlighter?.codeToThemedTokens(code, { theme: highlighter.themeName, lang: highlighter.language }),
+    [highlighter, code],
+  )
   const [isFigmaLoading, setIsFigmaLoading] = useState(false)
 
   const themeData = useMemo(() => {
@@ -112,6 +115,16 @@ const Main: React.FC = () => {
     setCode(formattedCode)
   }
 
+  React.useEffect(() => {
+    if (env !== 'Figma') return
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyR' && (e.ctrlKey || e.metaKey)) {
+        document.location.reload()
+      }
+    })
+  }, [])
+
   if (fontRes.isLoading || isHighlighterLoading) {
     return (
       <div className="flex items-center justify-center w-full h-full">
@@ -128,6 +141,7 @@ const Main: React.FC = () => {
   return (
     <div className="flex w-full h-full">
       <Analytics />
+
       <Editor
         {...{
           themeName,
@@ -141,7 +155,6 @@ const Main: React.FC = () => {
           code: code,
           setCode: setCode,
           lineHeight: fontSize * 1.5,
-          env,
         }}
       />
       <Sidebar
